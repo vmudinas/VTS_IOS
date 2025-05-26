@@ -150,6 +150,27 @@ struct PaymentHistoryRowView: View {
                 }
             }
             .padding(.top, 2)
+            
+            // Show refund details if applicable
+            if payment.hasRefund, let refundIssuedBy = payment.refundIssuedBy, let refundReason = payment.refundReason {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Refund by: \(refundIssuedBy)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Reason: \(refundReason)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                    
+                    if let refundDate = payment.refundDate {
+                        Text("Date: \(formattedDate(refundDate))")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.top, 2)
+            }
         }
         .padding(.vertical, 5)
     }
@@ -254,7 +275,7 @@ struct PaymentDetailView: View {
                         }
                         
                         if !payment.hasRefund {
-                            Button("Request Refund") {
+                            Button("Issue Refund (Landlords Only)") {
                                 refundAmount = String(format: "%.2f", payment.amount)
                                 showRefundSheet = true
                             }
@@ -265,6 +286,34 @@ struct PaymentDetailView: View {
                                 Spacer()
                                 Text("$\(String(format: "%.2f", refundAmount))")
                                     .foregroundColor(.secondary)
+                            }
+                            
+                            if let refundIssuedBy = payment.refundIssuedBy {
+                                HStack {
+                                    Text("Issued By")
+                                    Spacer()
+                                    Text(refundIssuedBy)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            
+                            if let refundReason = payment.refundReason {
+                                HStack {
+                                    Text("Reason")
+                                    Spacer()
+                                    Text(refundReason)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(2)
+                                }
+                            }
+                            
+                            if let refundDate = payment.refundDate {
+                                HStack {
+                                    Text("Refund Date")
+                                    Spacer()
+                                    Text(formattedDate(refundDate))
+                                        .foregroundColor(.secondary)
+                                }
                             }
                         }
                     }
@@ -328,11 +377,22 @@ struct RefundView: View {
     
     @State private var isProcessing = false
     @State private var refundComplete = false
+    @State private var landlordId: String = "landlord123" // In a real app, this would be fetched from user credentials
+    @State private var refundReason: String = ""
+    @State private var showError = false
+    @State private var errorMessage = ""
     
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Refund Details")) {
+                Section(header: Text("Landlord Refund Management")) {
+                    HStack {
+                        Text("Landlord ID")
+                        Spacer()
+                        Text(landlordId)
+                            .foregroundColor(.secondary)
+                    }
+                
                     HStack {
                         Text("Original Payment")
                         Spacer()
@@ -342,6 +402,9 @@ struct RefundView: View {
                     
                     TextField("Refund Amount", text: $refundAmount)
                         .keyboardType(.decimalPad)
+                    
+                    TextField("Reason for Refund", text: $refundReason)
+                        .autocapitalization(.none)
                 }
                 
                 Button(action: {
@@ -355,33 +418,53 @@ struct RefundView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
-                .disabled(isProcessing)
+                .disabled(isProcessing || refundReason.isEmpty)
             }
-            .navigationBarTitle("Request Refund", displayMode: .inline)
+            .navigationBarTitle("Issue Refund", displayMode: .inline)
             .navigationBarItems(trailing: Button("Cancel") {
                 isPresented = false
             })
             .alert(isPresented: $refundComplete) {
                 Alert(
                     title: Text("Refund Processed"),
-                    message: Text("Your refund request has been processed."),
+                    message: Text("The refund has been processed and the tenant has been notified."),
                     dismissButton: .default(Text("OK")) {
                         isPresented = false
                         parentSheet = false
                     }
                 )
             }
+            .alert(isPresented: $showError) {
+                Alert(
+                    title: Text("Error"),
+                    message: Text(errorMessage),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
         }
     }
     
     private func processRefund() {
-        guard let amount = Double(refundAmount), amount > 0 else { return }
+        guard let amount = Double(refundAmount), amount > 0 else { 
+            errorMessage = "Please enter a valid refund amount"
+            showError = true
+            return
+        }
+        
+        guard !refundReason.isEmpty else {
+            errorMessage = "Please provide a reason for the refund"
+            showError = true
+            return
+        }
         
         isProcessing = true
-        paymentService.refundPayment(payment: payment, amount: amount) { success in
+        paymentService.refundPayment(payment: payment, amount: amount, issuedBy: landlordId, reason: refundReason) { success in
             isProcessing = false
             if success {
                 refundComplete = true
+            } else {
+                errorMessage = "Failed to process the refund. Please try again."
+                showError = true
             }
         }
     }

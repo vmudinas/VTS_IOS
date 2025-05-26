@@ -29,9 +29,9 @@ class PaymentGatewayService: ObservableObject {
     }
     
     // Process refund for a payment
-    func processRefund(payment: Payment, amount: Double, completion: @escaping (Bool, Double) -> Void) {
+    func processRefund(payment: Payment, amount: Double, issuedBy: String, reason: String, completion: @escaping (Bool, Double, Date) -> Void) {
         guard payment.isPaid else {
-            completion(false, 0)
+            completion(false, 0, Date())
             return
         }
         
@@ -40,9 +40,15 @@ class PaymentGatewayService: ObservableObject {
         // Simulating refund processing with a delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             self.isRefunding = false
+            
             // In a real app, would validate refund amount against payment amount
             let refundAmount = min(amount, payment.amount)
-            completion(true, refundAmount)
+            let refundDate = Date()
+            
+            // Schedule notification for the tenant
+            self.scheduleRefundNotification(for: payment, amount: refundAmount, reason: reason)
+            
+            completion(true, refundAmount, refundDate)
         }
     }
     
@@ -99,6 +105,27 @@ class PaymentGatewayService: ObservableObject {
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 print("Error scheduling notification: \(error)")
+            }
+        }
+    }
+    
+    // Schedule notification for refund
+    private func scheduleRefundNotification(for payment: Payment, amount: Double, reason: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "Refund Processed"
+        content.body = "A refund of $\(String(format: "%.2f", amount)) has been issued for your \(payment.description) payment. Reason: \(reason)"
+        content.sound = UNNotificationSound.default
+        
+        // Send notification immediately
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        
+        // Create the request
+        let request = UNNotificationRequest(identifier: "refund-\(payment.id)", content: content, trigger: trigger)
+        
+        // Add to notification center
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error scheduling refund notification: \(error)")
             }
         }
     }

@@ -30,9 +30,12 @@ struct Payment: Identifiable {
     var paymentFrequency: PaymentFrequency
     var hasRefund: Bool
     var refundAmount: Double?
+    var refundIssuedBy: String? // Who issued the refund (landlord ID)
+    var refundReason: String? // Reason for refund
+    var refundDate: Date? // When the refund was issued
     var nextDueDate: Date?
     
-    init(id: UUID = UUID(), amount: Double, dueDate: Date, description: String, assignedTo: String, isPaid: Bool = false, paymentMethod: PaymentMethod? = nil, isRecurring: Bool = false, paymentFrequency: PaymentFrequency = .oneTime, hasRefund: Bool = false, refundAmount: Double? = nil, nextDueDate: Date? = nil) {
+    init(id: UUID = UUID(), amount: Double, dueDate: Date, description: String, assignedTo: String, isPaid: Bool = false, paymentMethod: PaymentMethod? = nil, isRecurring: Bool = false, paymentFrequency: PaymentFrequency = .oneTime, hasRefund: Bool = false, refundAmount: Double? = nil, refundIssuedBy: String? = nil, refundReason: String? = nil, refundDate: Date? = nil, nextDueDate: Date? = nil) {
         self.id = id
         self.amount = amount
         self.dueDate = dueDate
@@ -44,6 +47,9 @@ struct Payment: Identifiable {
         self.paymentFrequency = paymentFrequency
         self.hasRefund = hasRefund
         self.refundAmount = refundAmount
+        self.refundIssuedBy = refundIssuedBy
+        self.refundReason = refundReason
+        self.refundDate = refundDate
         self.nextDueDate = nextDueDate
     }
 }
