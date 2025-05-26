@@ -61,7 +61,10 @@ class PaymentService: ObservableObject {
                 isPaid: true,
                 paymentMethod: .paypal,
                 hasRefund: true,
-                refundAmount: 15.25
+                refundAmount: 15.25,
+                refundIssuedBy: "landlord123",
+                refundReason: "Equipment returned early",
+                refundDate: calendar.date(byAdding: .day, value: -18, to: Date()) ?? Date()
             )
         ]
     }
@@ -113,14 +116,25 @@ class PaymentService: ObservableObject {
     }
     
     // Process refund for a payment
-    func refundPayment(payment: Payment, amount: Double, completion: @escaping (Bool) -> Void) {
-        paymentGateway.processRefund(payment: payment, amount: amount) { success, refundAmount in
+    func refundPayment(payment: Payment, amount: Double, issuedBy: String, reason: String, completion: @escaping (Bool) -> Void) {
+        paymentGateway.processRefund(payment: payment, amount: amount, issuedBy: issuedBy, reason: reason) { success, refundAmount, refundDate in
             if success {
                 if let index = self.paymentHistory.firstIndex(where: { $0.id == payment.id }) {
                     var refundedPayment = payment
                     refundedPayment.hasRefund = true
                     refundedPayment.refundAmount = refundAmount
+                    refundedPayment.refundIssuedBy = issuedBy
+                    refundedPayment.refundReason = reason
+                    refundedPayment.refundDate = refundDate
                     self.paymentHistory[index] = refundedPayment
+                    
+                    // Log the refund in history
+                    let historyService = HistoryService()
+                    historyService.addHistoryItem(item: HistoryItem(
+                        activityType: .payment,
+                        description: "Refund of $\(String(format: "%.2f", refundAmount)) issued for \(payment.description) by \(issuedBy). Reason: \(reason)",
+                        relatedItemId: payment.id
+                    ))
                 }
                 completion(true)
             } else {
