@@ -1,5 +1,22 @@
 import Foundation
 
+// Payment method enum to represent different payment options
+enum PaymentMethod: String, CaseIterable {
+    case stripe = "Stripe"
+    case paypal = "PayPal"
+    case applePay = "Apple Pay"
+    case bankTransfer = "Bank Transfer"
+}
+
+// Payment frequency for recurring payments
+enum PaymentFrequency: String, CaseIterable {
+    case oneTime = "One Time"
+    case weekly = "Weekly"
+    case monthly = "Monthly"
+    case quarterly = "Quarterly"
+    case annually = "Annually"
+}
+
 // Payment model to represent upcoming payments
 struct Payment: Identifiable {
     let id: UUID
@@ -8,14 +25,26 @@ struct Payment: Identifiable {
     let description: String
     let assignedTo: String
     let isPaid: Bool
+    var paymentMethod: PaymentMethod?
+    var isRecurring: Bool
+    var paymentFrequency: PaymentFrequency
+    var hasRefund: Bool
+    var refundAmount: Double?
+    var nextDueDate: Date?
     
-    init(id: UUID = UUID(), amount: Double, dueDate: Date, description: String, assignedTo: String, isPaid: Bool = false) {
+    init(id: UUID = UUID(), amount: Double, dueDate: Date, description: String, assignedTo: String, isPaid: Bool = false, paymentMethod: PaymentMethod? = nil, isRecurring: Bool = false, paymentFrequency: PaymentFrequency = .oneTime, hasRefund: Bool = false, refundAmount: Double? = nil, nextDueDate: Date? = nil) {
         self.id = id
         self.amount = amount
         self.dueDate = dueDate
         self.description = description
         self.assignedTo = assignedTo
         self.isPaid = isPaid
+        self.paymentMethod = paymentMethod
+        self.isRecurring = isRecurring
+        self.paymentFrequency = paymentFrequency
+        self.hasRefund = hasRefund
+        self.refundAmount = refundAmount
+        self.nextDueDate = nextDueDate
     }
 }
 

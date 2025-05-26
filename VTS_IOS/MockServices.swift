@@ -5,6 +5,8 @@ import SwiftUI
 // Mock service for handling payment data
 class PaymentService: ObservableObject {
     @Published var upcomingPayments: [Payment] = []
+    @Published var paymentHistory: [Payment] = []
+    let paymentGateway = PaymentGatewayService()
     
     init() {
         // Load sample data
@@ -20,7 +22,10 @@ class PaymentService: ObservableObject {
                 dueDate: calendar.date(byAdding: .day, value: 3, to: Date()) ?? Date(),
                 description: "Monthly service fee",
                 assignedTo: "user123",
-                isPaid: false
+                isPaid: false,
+                isRecurring: true,
+                paymentFrequency: .monthly,
+                nextDueDate: calendar.date(byAdding: .month, value: 1, to: Date()) ?? Date()
             ),
             Payment(
                 amount: 85.50,
@@ -37,12 +42,120 @@ class PaymentService: ObservableObject {
                 isPaid: false
             )
         ]
+        
+        // Add some paid payments to history
+        paymentHistory = [
+            Payment(
+                amount: 95.00,
+                dueDate: calendar.date(byAdding: .day, value: -10, to: Date()) ?? Date(),
+                description: "Previous service fee",
+                assignedTo: "user123",
+                isPaid: true,
+                paymentMethod: .stripe
+            ),
+            Payment(
+                amount: 45.75,
+                dueDate: calendar.date(byAdding: .day, value: -20, to: Date()) ?? Date(),
+                description: "Tool rental",
+                assignedTo: "user123",
+                isPaid: true,
+                paymentMethod: .paypal,
+                hasRefund: true,
+                refundAmount: 15.25
+            )
+        ]
     }
     
     // In a real app, this would make an API call to the backend
     func fetchUpcomingPayments() {
         // This would be an API call in a real application
         // For now, we just use the sample data
+    }
+    
+    // Mark a payment as paid using the selected payment method
+    func makePayment(payment: Payment, paymentMethod: PaymentMethod, completion: @escaping (Bool) -> Void) {
+        var updatedPayment = payment
+        updatedPayment.paymentMethod = paymentMethod
+        
+        paymentGateway.processPayment(payment: updatedPayment) { success in
+            if success {
+                if let index = self.upcomingPayments.firstIndex(where: { $0.id == payment.id }) {
+                    var paidPayment = payment
+                    paidPayment.isPaid = true
+                    paidPayment.paymentMethod = paymentMethod
+                    
+                    self.upcomingPayments.remove(at: index)
+                    self.paymentHistory.append(paidPayment)
+                    self.paymentHistory.sort { $0.dueDate > $1.dueDate }
+                    
+                    // If recurring, add next payment to upcoming
+                    if paidPayment.isRecurring, let nextDueDate = paidPayment.nextDueDate {
+                        let nextPayment = Payment(
+                            amount: paidPayment.amount,
+                            dueDate: nextDueDate,
+                            description: paidPayment.description,
+                            assignedTo: paidPayment.assignedTo,
+                            isPaid: false,
+                            paymentMethod: paidPayment.paymentMethod,
+                            isRecurring: true,
+                            paymentFrequency: paidPayment.paymentFrequency,
+                            nextDueDate: self.calculateNextDueDate(from: nextDueDate, frequency: paidPayment.paymentFrequency)
+                        )
+                        self.upcomingPayments.append(nextPayment)
+                        self.upcomingPayments.sort { $0.dueDate < $1.dueDate }
+                    }
+                }
+                completion(true)
+            } else {
+                completion(false)
+            }
+        }
+    }
+    
+    // Process refund for a payment
+    func refundPayment(payment: Payment, amount: Double, completion: @escaping (Bool) -> Void) {
+        paymentGateway.processRefund(payment: payment, amount: amount) { success, refundAmount in
+            if success {
+                if let index = self.paymentHistory.firstIndex(where: { $0.id == payment.id }) {
+                    var refundedPayment = payment
+                    refundedPayment.hasRefund = true
+                    refundedPayment.refundAmount = refundAmount
+                    self.paymentHistory[index] = refundedPayment
+                }
+                completion(true)
+            } else {
+                completion(false)
+            }
+        }
+    }
+    
+    // Set up recurring payment
+    func setupRecurringPayment(payment: Payment, frequency: PaymentFrequency) {
+        if let index = upcomingPayments.firstIndex(where: { $0.id == payment.id }) {
+            let updatedPayment = paymentGateway.setupRecurringPayment(payment: payment, frequency: frequency)
+            upcomingPayments[index] = updatedPayment
+        }
+    }
+    
+    // Calculate next due date based on frequency
+    private func calculateNextDueDate(from date: Date, frequency: PaymentFrequency) -> Date? {
+        let calendar = Calendar.current
+        var dateComponents = DateComponents()
+        
+        switch frequency {
+        case .weekly:
+            dateComponents.day = 7
+        case .monthly:
+            dateComponents.month = 1
+        case .quarterly:
+            dateComponents.month = 3
+        case .annually:
+            dateComponents.year = 1
+        case .oneTime:
+            return nil
+        }
+        
+        return calendar.date(byAdding: dateComponents, to: date)
     }
 }
 
