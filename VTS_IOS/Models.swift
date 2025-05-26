@@ -1,5 +1,26 @@
 import Foundation
 
+// Message model to represent communication between landlord and tenant
+struct Message: Identifiable {
+    let id: UUID
+    let sender: String
+    let recipient: String
+    let content: String
+    let timestamp: Date
+    var isRead: Bool
+    var attachmentURLs: [URL]?
+    
+    init(id: UUID = UUID(), sender: String, recipient: String, content: String, timestamp: Date = Date(), isRead: Bool = false, attachmentURLs: [URL]? = nil) {
+        self.id = id
+        self.sender = sender
+        self.recipient = recipient
+        self.content = content
+        self.timestamp = timestamp
+        self.isRead = isRead
+        self.attachmentURLs = attachmentURLs
+    }
+}
+
 // Payment method enum to represent different payment options
 enum PaymentMethod: String, CaseIterable {
     case stripe = "Stripe"
@@ -150,6 +171,7 @@ enum ActivityType: String {
     case issue = "Issue"
     case videoUpload = "Video Upload"
     case document = "Document"
+    case message = "Message"
 }
 
 // Document type enum to represent different kinds of documents

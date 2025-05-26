@@ -24,6 +24,12 @@ struct ContentView: View {
                 }
                 .accessibilityLabel("Documents Tab")
             
+            MessagesView()
+                .tabItem {
+                    Label("Messages", systemImage: "message.fill")
+                }
+                .accessibilityLabel("Messages Tab")
+            
             VideoUploadView()
                 .tabItem {
                     Label("Videos", systemImage: "video.fill")
