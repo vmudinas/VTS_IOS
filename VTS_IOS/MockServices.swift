@@ -613,6 +613,11 @@ class HistoryService: ObservableObject {
                 activityType: .document,
                 description: "Document 'Apartment 3B Lease' signed by tenant123",
                 date: Date().addingTimeInterval(-86400 * 28) // 28 days ago
+            ),
+            HistoryItem(
+                activityType: .message,
+                description: "New message received from landlord123",
+                date: Date().addingTimeInterval(-86400 * 2) // 2 days ago
             )
         ]
     }
@@ -623,5 +628,116 @@ class HistoryService: ObservableObject {
         historyItems.sort { $0.date > $1.date } // Newest first
         
         // In a real app, this would be sent to a backend API
+    }
+}
+
+// Mock service for handling messages
+class MessageService: ObservableObject {
+    @Published var messages: [Message] = []
+    private let historyService = HistoryService()
+    
+    init() {
+        // Load sample data
+        loadSampleMessages()
+    }
+    
+    func loadSampleMessages() {
+        let calendar = Calendar.current
+        
+        messages = [
+            Message(
+                sender: "landlord123",
+                recipient: "tenant123",
+                content: "Hello! Just a reminder that I'll be stopping by tomorrow for the annual apartment inspection. Let me know if you have any questions.",
+                timestamp: calendar.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
+                isRead: true
+            ),
+            Message(
+                sender: "tenant123",
+                recipient: "landlord123",
+                content: "Thanks for letting me know. What time should I expect you?",
+                timestamp: calendar.date(byAdding: .hour, value: -42, to: Date()) ?? Date(),
+                isRead: true
+            ),
+            Message(
+                sender: "landlord123",
+                recipient: "tenant123",
+                content: "I'll be there around 2 PM if that works for you.",
+                timestamp: calendar.date(byAdding: .hour, value: -41, to: Date()) ?? Date(),
+                isRead: false
+            ),
+            Message(
+                sender: "landlord123",
+                recipient: "tenant456",
+                content: "Hi there! I've received your maintenance request about the heating system. A technician will come by on Friday.",
+                timestamp: calendar.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
+                isRead: false
+            )
+        ]
+    }
+    
+    // Send a new message and add to history
+    func sendMessage(sender: String, recipient: String, content: String, attachments: [URL]? = nil) {
+        let newMessage = Message(
+            sender: sender,
+            recipient: recipient,
+            content: content,
+            attachmentURLs: attachments
+        )
+        
+        messages.append(newMessage)
+        
+        // Add to history
+        historyService.addHistoryItem(item: HistoryItem(
+            activityType: .message,
+            description: "Message sent to \(recipient)",
+            relatedItemId: newMessage.id
+        ))
+    }
+    
+    // Mark a message as read
+    func markAsRead(message: Message) {
+        if let index = messages.firstIndex(where: { $0.id == message.id }) {
+            var updatedMessage = message
+            updatedMessage.isRead = true
+            messages[index] = updatedMessage
+        }
+    }
+    
+    // Get all messages for the current user (either as sender or recipient)
+    func getMessagesForUser(userId: String) -> [Message] {
+        return messages.filter { $0.sender == userId || $0.recipient == userId }
+            .sorted(by: { $0.timestamp > $1.timestamp })
+    }
+    
+    // Get conversation between two users
+    func getConversation(between user1: String, and user2: String) -> [Message] {
+        return messages.filter { 
+            ($0.sender == user1 && $0.recipient == user2) || 
+            ($0.sender == user2 && $0.recipient == user1) 
+        }.sorted(by: { $0.timestamp < $1.timestamp })
+    }
+    
+    // Get all unique conversations for a user
+    func getConversationsForUser(userId: String) -> [(String, Message)] {
+        let userMessages = getMessagesForUser(userId: userId)
+        var conversationPartners: [String: Message] = [:]
+        
+        for message in userMessages {
+            let partner = message.sender == userId ? message.recipient : message.sender
+            
+            // Only add if this is a newer message than we already have
+            if let existingMessage = conversationPartners[partner] {
+                if message.timestamp > existingMessage.timestamp {
+                    conversationPartners[partner] = message
+                }
+            } else {
+                conversationPartners[partner] = message
+            }
+        }
+        
+        // Convert to array of tuples (partner, last message)
+        return conversationPartners.map { ($0.key, $0.value) }
+            .sorted { $0.1.timestamp > $1.1.timestamp }
     }
 }

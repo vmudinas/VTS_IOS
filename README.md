@@ -25,6 +25,13 @@ VTS_IOS is an iOS application that demonstrates the use of SwiftUI to create a u
 - View existing issues with status indicators
 - Issues can be in various states: Open, In Progress, Resolved, Closed
 
+### Messages
+- Direct messaging system between landlords and tenants
+- Conversation view with real-time message status (read/unread)
+- Support for creating new conversations
+- Message history tracking
+- Notification for new messages
+
 ### Documents
 - Upload and manage important documents (leases, move-in checklists, renewal agreements)
 - E-sign documents directly in the app
@@ -153,6 +160,14 @@ To fully support this application, the backend should implement the following AP
 - `PUT /api/issues/{id}` - Update an existing issue
 - `PUT /api/issues/{id}/status` - Update issue status
 
+### Messages API
+- `GET /api/messages` - Get list of messages for the authenticated user
+- `GET /api/messages/{id}` - Get details of a specific message
+- `POST /api/messages` - Send a new message
+- `PUT /api/messages/{id}/read` - Mark a message as read
+- `GET /api/messages/conversations` - Get list of conversations
+- `GET /api/messages/conversations/{userId}` - Get conversation with a specific user
+
 ### Video API
 - `GET /api/videos` - Get list of uploaded videos
 - `GET /api/videos/{id}` - Get details of a specific video
@@ -213,6 +228,19 @@ To fully support this application, the backend should implement the following AP
   "duration": "number",
   "url": "string",
   "uploadStatus": "string"
+}
+```
+
+**Message**
+```json
+{
+  "id": "string",
+  "sender": "string",
+  "recipient": "string",
+  "content": "string",
+  "timestamp": "date",
+  "isRead": "boolean",
+  "attachmentURLs": ["string"]
 }
 ```
 
