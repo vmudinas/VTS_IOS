@@ -1,10 +1,40 @@
 # VTS_IOS
 
-A simple iOS application built with SwiftUI that displays a welcome message.
+A SwiftUI iOS application for managing payments, issues, and uploading videos.
 
 ## Project Overview
 
-VTS_IOS is a basic iOS application that demonstrates the use of SwiftUI to create a simple user interface with a globe icon and welcome text. This project serves as a starting point for iOS development with SwiftUI.
+VTS_IOS is an iOS application that demonstrates the use of SwiftUI to create a user-friendly interface for managing payments, creating issues, and uploading videos. The app includes authentication, and a tabbed interface for accessing different features.
+
+## Features
+
+### Authentication
+- Login with username and password
+- Default credentials: admin/admin
+
+### Payments
+- View upcoming payments scheduled by administrators
+- Payment details include amount, due date, description, and payment status
+
+### Issues
+- Create new issues with title and description
+- View existing issues with status indicators
+- Issues can be in various states: Open, In Progress, Resolved, Closed
+
+### Video Upload
+- Upload videos from camera or photo library
+- Add title and description to uploaded videos
+- View list of previously uploaded videos with status indicators
+- Monitor upload progress
+
+### History
+- View chronological history of all user activities
+- Activities are grouped by date
+- Activity types include Payments, Issues, and Video Uploads
+
+### User Profile
+- View user information
+- Logout functionality
 
 ## Requirements
 
@@ -74,10 +104,99 @@ VTS_IOS is a basic iOS application that demonstrates the use of SwiftUI to creat
 
 - `AppDelegate.swift` - Application delegate for app lifecycle events
 - `SceneDelegate.swift` - Scene delegate for UI lifecycle events
-- `ContentView.swift` - Main SwiftUI view defining the user interface
+- `MainView.swift` - Main view that handles authentication state
+- `LoginView.swift` - User login interface
+- `ContentView.swift` - TabView container for main app functionality
+- `PaymentsView.swift` - View for displaying upcoming payments
+- `IssuesView.swift` - View for creating and viewing issues
+- `VideoUploadView.swift` - View for uploading and viewing videos
+- `HistoryView.swift` - View for displaying user activity history
+- `Models.swift` - Data models (Payment, Issue, Video, HistoryItem)
+- `MockServices.swift` - Mock services for simulating backend interactions
+- `UserAuthentication.swift` - Authentication management
 - `Assets.xcassets` - Asset catalog for images and app icons
 - `LaunchScreen.storyboard` - Launch screen configuration
 - `Info.plist` - Application configuration settings
+
+## Backend Requirements
+
+To fully support this application, the backend should implement the following APIs:
+
+### Authentication API
+- `POST /api/auth/login` - Authenticate user with username and password
+- `POST /api/auth/logout` - End user session
+
+### Payments API
+- `GET /api/payments` - Get list of upcoming payments for the authenticated user
+- `GET /api/payments/{id}` - Get details of a specific payment
+- `PUT /api/payments/{id}/pay` - Mark a payment as paid
+
+### Issues API
+- `GET /api/issues` - Get list of issues
+- `GET /api/issues/{id}` - Get details of a specific issue
+- `POST /api/issues` - Create a new issue
+- `PUT /api/issues/{id}` - Update an existing issue
+- `PUT /api/issues/{id}/status` - Update issue status
+
+### Video API
+- `GET /api/videos` - Get list of uploaded videos
+- `GET /api/videos/{id}` - Get details of a specific video
+- `POST /api/videos` - Upload a new video (multipart form data)
+- `GET /api/videos/{id}/stream` - Stream a video
+
+### History API
+- `GET /api/history` - Get user activity history
+- `GET /api/history/{id}` - Get details of a specific history item
+
+### Data Models
+
+**Payment**
+```json
+{
+  "id": "string",
+  "amount": "number",
+  "dueDate": "date",
+  "description": "string",
+  "assignedTo": "string",
+  "isPaid": "boolean"
+}
+```
+
+**Issue**
+```json
+{
+  "id": "string",
+  "title": "string",
+  "description": "string",
+  "createdDate": "date",
+  "status": "string",
+  "createdBy": "string"
+}
+```
+
+**Video**
+```json
+{
+  "id": "string",
+  "title": "string",
+  "description": "string",
+  "uploadDate": "date",
+  "duration": "number",
+  "url": "string",
+  "uploadStatus": "string"
+}
+```
+
+**HistoryItem**
+```json
+{
+  "id": "string",
+  "activityType": "string",
+  "description": "string",
+  "date": "date",
+  "relatedItemId": "string"
+}
+```
 
 ## Dependencies
 

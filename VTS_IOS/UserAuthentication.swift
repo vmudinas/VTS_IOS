@@ -4,6 +4,7 @@ import Combine
 
 class UserAuthentication: ObservableObject {
     @Published var isAuthenticated: Bool = false
+    @Published var currentUsername: String = ""
     
     // Default credentials - these would be replaced by external API call in the future
     private let defaultUsername = "admin"
@@ -16,6 +17,7 @@ class UserAuthentication: ObservableObject {
         
         if isValid {
             isAuthenticated = true
+            currentUsername = username
         }
         
         return isValid
@@ -23,5 +25,6 @@ class UserAuthentication: ObservableObject {
     
     func logout() {
         isAuthenticated = false
+        currentUsername = ""
     }
 }

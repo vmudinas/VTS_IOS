@@ -4,18 +4,59 @@ struct ContentView: View {
     @ObservedObject var authentication: UserAuthentication
     
     var body: some View {
+        TabView {
+            PaymentsView()
+                .tabItem {
+                    Image(systemName: "dollarsign.circle")
+                    Text("Payments")
+                }
+            
+            IssuesView()
+                .tabItem {
+                    Image(systemName: "exclamationmark.circle")
+                    Text("Issues")
+                }
+            
+            VideoUploadView()
+                .tabItem {
+                    Image(systemName: "video")
+                    Text("Videos")
+                }
+            
+            HistoryView()
+                .tabItem {
+                    Image(systemName: "clock")
+                    Text("History")
+                }
+            
+            ProfileView(authentication: authentication)
+                .tabItem {
+                    Image(systemName: "person")
+                    Text("Profile")
+                }
+        }
+        .accentColor(.blue)
+    }
+}
+
+struct ProfileView: View {
+    @ObservedObject var authentication: UserAuthentication
+    
+    var body: some View {
         NavigationView {
             VStack {
-                Image(systemName: "globe")
-                    .imageScale(.large)
-                    .foregroundColor(.accentColor)
+                Image(systemName: "person.circle")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                    .foregroundColor(.blue)
                     .padding()
                 
                 Text("Welcome to VTS iOS App")
                     .font(.title)
                     .padding()
                 
-                Text("You are successfully logged in!")
+                Text("You are logged in as \(authentication.currentUsername)")
                     .font(.subheadline)
                     .padding()
                 
@@ -35,7 +76,7 @@ struct ContentView: View {
                 .padding(.bottom, 40)
             }
             .padding()
-            .navigationBarTitle("Home", displayMode: .inline)
+            .navigationBarTitle("Profile", displayMode: .inline)
         }
     }
 }
