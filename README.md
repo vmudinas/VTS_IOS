@@ -25,6 +25,13 @@ VTS_IOS is an iOS application that demonstrates the use of SwiftUI to create a u
 - View existing issues with status indicators
 - Issues can be in various states: Open, In Progress, Resolved, Closed
 
+### Documents
+- Upload and manage important documents (leases, move-in checklists, renewal agreements)
+- E-sign documents directly in the app
+- Track signature status (pending, signed, rejected)
+- Secure document storage and management
+- Organize documents by type and related property
+
 ### Video Upload
 - Upload videos from camera or photo library
 - Add title and description to uploaded videos
@@ -34,7 +41,7 @@ VTS_IOS is an iOS application that demonstrates the use of SwiftUI to create a u
 ### History
 - View chronological history of all user activities
 - Activities are grouped by date
-- Activity types include Payments, Issues, and Video Uploads
+- Activity types include Payments, Issues, Video Uploads, and Documents
 
 ### User Profile
 - View user information
@@ -113,9 +120,10 @@ VTS_IOS is an iOS application that demonstrates the use of SwiftUI to create a u
 - `ContentView.swift` - TabView container for main app functionality
 - `PaymentsView.swift` - View for displaying upcoming payments
 - `IssuesView.swift` - View for creating and viewing issues
+- `DocumentsView.swift` - View for document management and e-signing
 - `VideoUploadView.swift` - View for uploading and viewing videos
 - `HistoryView.swift` - View for displaying user activity history
-- `Models.swift` - Data models (Payment, Issue, Video, HistoryItem)
+- `Models.swift` - Data models (Payment, Issue, Document, Video, HistoryItem)
 - `MockServices.swift` - Mock services for simulating backend interactions
 - `UserAuthentication.swift` - Authentication management
 - `Assets.xcassets` - Asset catalog for images and app icons
@@ -154,6 +162,14 @@ To fully support this application, the backend should implement the following AP
 ### History API
 - `GET /api/history` - Get user activity history
 - `GET /api/history/{id}` - Get details of a specific history item
+
+### Documents API
+- `GET /api/documents` - Get list of documents
+- `GET /api/documents/{id}` - Get details of a specific document
+- `POST /api/documents` - Upload a new document (multipart form data)
+- `PUT /api/documents/{id}/sign` - E-sign a document
+- `PUT /api/documents/{id}/reject` - Reject a document signature request
+- `GET /api/documents/download/{id}` - Download document file
 
 ### Data Models
 
@@ -208,6 +224,22 @@ To fully support this application, the backend should implement the following AP
   "description": "string",
   "date": "date",
   "relatedItemId": "string"
+}
+```
+
+**Document**
+```json
+{
+  "id": "string",
+  "title": "string",
+  "description": "string",
+  "documentType": "string",
+  "uploadDate": "date",
+  "fileURL": "string",
+  "signatureStatus": "string",
+  "signedDate": "date",
+  "signedBy": "string",
+  "relatedEntityId": "string"
 }
 ```
 

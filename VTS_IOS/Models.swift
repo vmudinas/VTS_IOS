@@ -149,4 +149,48 @@ enum ActivityType: String {
     case payment = "Payment"
     case issue = "Issue"
     case videoUpload = "Video Upload"
+    case document = "Document"
+}
+
+// Document type enum to represent different kinds of documents
+enum DocumentType: String, CaseIterable {
+    case lease = "Lease Agreement"
+    case moveInChecklist = "Move-in Checklist"
+    case renewalAgreement = "Renewal Agreement"
+    case other = "Other Document"
+}
+
+// Document signature status
+enum SignatureStatus: String {
+    case notRequired = "Not Required"
+    case pending = "Signature Pending"
+    case completed = "Signed"
+    case rejected = "Rejected"
+}
+
+// Document model to represent uploaded documents
+struct Document: Identifiable {
+    let id: UUID
+    let title: String
+    let description: String
+    let documentType: DocumentType
+    let uploadDate: Date
+    let fileURL: URL?
+    var signatureStatus: SignatureStatus
+    var signedDate: Date?
+    var signedBy: String?
+    var relatedEntityId: String? // could be property ID, tenant ID, etc.
+    
+    init(id: UUID = UUID(), title: String, description: String, documentType: DocumentType, uploadDate: Date = Date(), fileURL: URL? = nil, signatureStatus: SignatureStatus = .notRequired, signedDate: Date? = nil, signedBy: String? = nil, relatedEntityId: String? = nil) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.documentType = documentType
+        self.uploadDate = uploadDate
+        self.fileURL = fileURL
+        self.signatureStatus = signatureStatus
+        self.signedDate = signedDate
+        self.signedBy = signedBy
+        self.relatedEntityId = relatedEntityId
+    }
 }

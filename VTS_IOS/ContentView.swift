@@ -18,6 +18,12 @@ struct ContentView: View {
                 }
                 .accessibilityLabel("Maintenance Requests Tab")
             
+            DocumentsView()
+                .tabItem {
+                    Label("Documents", systemImage: "doc.fill")
+                }
+                .accessibilityLabel("Documents Tab")
+            
             VideoUploadView()
                 .tabItem {
                     Label("Videos", systemImage: "video.fill")
