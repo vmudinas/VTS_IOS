@@ -14,9 +14,9 @@ struct ContentView: View {
             
             IssuesView()
                 .tabItem {
-                    Label("Issues", systemImage: "exclamationmark.circle.fill")
+                    Label("Maintenance", systemImage: "wrench.fill")
                 }
-                .accessibilityLabel("Issues Tab")
+                .accessibilityLabel("Maintenance Requests Tab")
             
             VideoUploadView()
                 .tabItem {
