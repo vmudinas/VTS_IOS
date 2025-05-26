@@ -2,87 +2,159 @@ import SwiftUI
 
 struct ContentView: View {
     @ObservedObject var authentication: UserAuthentication
+    @Environment(\.sizeCategory) var sizeCategory
     
     var body: some View {
         TabView {
             PaymentsView()
                 .tabItem {
-                    Image(systemName: "dollarsign.circle")
-                    Text("Payments")
+                    Label("Payments", systemImage: "dollarsign.circle.fill")
                 }
+                .accessibilityLabel("Payments Tab")
             
             IssuesView()
                 .tabItem {
-                    Image(systemName: "exclamationmark.circle")
-                    Text("Issues")
+                    Label("Issues", systemImage: "exclamationmark.circle.fill")
                 }
+                .accessibilityLabel("Issues Tab")
             
             VideoUploadView()
                 .tabItem {
-                    Image(systemName: "video")
-                    Text("Videos")
+                    Label("Videos", systemImage: "video.fill")
                 }
+                .accessibilityLabel("Video Upload Tab")
             
             HistoryView()
                 .tabItem {
-                    Image(systemName: "clock")
-                    Text("History")
+                    Label("History", systemImage: "clock.fill")
                 }
+                .accessibilityLabel("Activity History Tab")
             
             ProfileView(authentication: authentication)
                 .tabItem {
-                    Image(systemName: "person")
-                    Text("Profile")
+                    Label("Profile", systemImage: "person.fill")
                 }
+                .accessibilityLabel("User Profile Tab")
         }
-        .accentColor(.blue)
+        .accentColor(Color(.systemBlue))
     }
 }
 
 struct ProfileView: View {
     @ObservedObject var authentication: UserAuthentication
+    @Environment(\.sizeCategory) var sizeCategory
+    @State private var showLogoutConfirmation = false
     
     var body: some View {
         NavigationView {
-            VStack {
-                Image(systemName: "person.circle")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
-                    .foregroundColor(.blue)
-                    .padding()
-                
-                Text("Welcome to VTS iOS App")
-                    .font(.title)
-                    .padding()
-                
-                Text("You are logged in as \(authentication.currentUsername)")
-                    .font(.subheadline)
-                    .padding()
-                
-                Spacer()
-                
-                Button(action: {
-                    authentication.logout()
-                }) {
-                    Text("Logout")
-                        .font(.headline)
-                        .foregroundColor(.white)
+            ScrollView {
+                VStack(spacing: 16) {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                        .foregroundColor(Color(.systemBlue))
                         .padding()
-                        .frame(width: 150)
-                        .background(Color.red)
-                        .cornerRadius(10)
+                        .accessibilityHidden(true) // Hidden because it's decorative
+                    
+                    Text("Welcome to VTS iOS App")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+                        .accessibilityAddTraits(.isHeader)
+                    
+                    Text("You are logged in as \(authentication.currentUsername)")
+                        .font(.body)
+                        .foregroundColor(Color(.secondaryLabel))
+                        .padding(.bottom, 8)
+                    
+                    // User information would go here in a real app
+                    VStack(alignment: .leading, spacing: 12) {
+                        ProfileInfoRow(icon: "envelope.fill", label: "Email", value: "user@example.com")
+                        ProfileInfoRow(icon: "phone.fill", label: "Phone", value: "(555) 123-4567")
+                        ProfileInfoRow(icon: "building.2.fill", label: "Company", value: "VTS Inc.")
+                    }
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        showLogoutConfirmation = true
+                    }) {
+                        Label("Logout", systemImage: "rectangle.portrait.and.arrow.right")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color(.systemRed))
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                    }
+                    .accessibilityHint("Double tap to log out of your account")
+                    .padding(.bottom, 40)
                 }
-                .padding(.bottom, 40)
+                .padding()
             }
-            .padding()
-            .navigationBarTitle("Profile", displayMode: .inline)
+            .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.inline)
+            .alert("Confirm Logout", isPresented: $showLogoutConfirmation) {
+                Button("Cancel", role: .cancel) {}
+                Button("Logout", role: .destructive) {
+                    withAnimation {
+                        authentication.logout()
+                    }
+                }
+            } message: {
+                Text("Are you sure you want to log out?")
+            }
         }
+    }
+}
+
+struct ProfileInfoRow: View {
+    let icon: String
+    let label: String
+    let value: String
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .foregroundColor(Color(.systemBlue))
+                .frame(width: 20)
+                .accessibilityHidden(true)
+            
+            Text(label)
+                .foregroundColor(Color(.secondaryLabel))
+                .font(.callout)
+                .frame(width: 70, alignment: .leading)
+            
+            Text(value)
+                .font(.body)
+                .foregroundColor(Color(.label))
+            
+            Spacer()
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(label): \(value)")
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(authentication: UserAuthentication())
+        Group {
+            ContentView(authentication: UserAuthentication())
+                .previewDisplayName("Default")
+            
+            ContentView(authentication: UserAuthentication())
+                .environment(\.colorScheme, .dark)
+                .previewDisplayName("Dark Mode")
+            
+            ContentView(authentication: UserAuthentication())
+                .environment(\.sizeCategory, .accessibilityLarge)
+                .previewDisplayName("Large Text")
+        }
     }
 }
