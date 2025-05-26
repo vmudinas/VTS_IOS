@@ -48,7 +48,15 @@ struct Payment: Identifiable {
     }
 }
 
-// Issue model to represent user created issues
+// Priority level for maintenance requests
+enum IssuePriority: String, CaseIterable {
+    case low = "Low"
+    case medium = "Medium"
+    case high = "High"
+    case urgent = "Urgent"
+}
+
+// Issue model to represent user created issues and maintenance requests
 struct Issue: Identifiable {
     let id: UUID
     let title: String
@@ -56,14 +64,26 @@ struct Issue: Identifiable {
     let createdDate: Date
     let status: IssueStatus
     let createdBy: String
+    var priority: IssuePriority
+    var assignedTo: String?
+    var imageURLs: [URL]
+    var isRecurring: Bool
+    var recurringFrequency: PaymentFrequency
+    var nextDueDate: Date?
     
-    init(id: UUID = UUID(), title: String, description: String, createdDate: Date = Date(), status: IssueStatus = .open, createdBy: String) {
+    init(id: UUID = UUID(), title: String, description: String, createdDate: Date = Date(), status: IssueStatus = .open, createdBy: String, priority: IssuePriority = .medium, assignedTo: String? = nil, imageURLs: [URL] = [], isRecurring: Bool = false, recurringFrequency: PaymentFrequency = .oneTime, nextDueDate: Date? = nil) {
         self.id = id
         self.title = title
         self.description = description
         self.createdDate = createdDate
         self.status = status
         self.createdBy = createdBy
+        self.priority = priority
+        self.assignedTo = assignedTo
+        self.imageURLs = imageURLs
+        self.isRecurring = isRecurring
+        self.recurringFrequency = recurringFrequency
+        self.nextDueDate = nextDueDate
     }
 }
 

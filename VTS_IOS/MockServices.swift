@@ -159,9 +159,10 @@ class PaymentService: ObservableObject {
     }
 }
 
-// Mock service for handling issues
+// Mock service for handling issues and maintenance requests
 class IssueService: ObservableObject {
     @Published var issues: [Issue] = []
+    private let historyService = HistoryService()
     
     init() {
         // Load sample data
@@ -183,20 +184,166 @@ class IssueService: ObservableObject {
                 createdDate: Date().addingTimeInterval(-86400 * 5), // 5 days ago
                 status: .open,
                 createdBy: "user123"
+            ),
+            Issue(
+                title: "Leaking kitchen faucet",
+                description: "The kitchen faucet is leaking and needs repair",
+                createdDate: Date().addingTimeInterval(-86400 * 1), // 1 day ago
+                status: .open,
+                createdBy: "tenant123",
+                priority: .high,
+                assignedTo: "maintenance1",
+                imageURLs: [URL(string: "https://example.com/faucet1.jpg")!],
+                isRecurring: false
+            ),
+            Issue(
+                title: "Monthly pest control",
+                description: "Regular pest control service for the apartment",
+                createdDate: Date().addingTimeInterval(-86400 * 10), // 10 days ago
+                status: .inProgress,
+                createdBy: "tenant123",
+                priority: .medium,
+                assignedTo: "contractor2",
+                imageURLs: [],
+                isRecurring: true,
+                recurringFrequency: .monthly,
+                nextDueDate: Date().addingTimeInterval(86400 * 20) // 20 days from now
             )
         ]
     }
     
     // In a real app, this would make an API call to the backend
-    func createIssue(title: String, description: String) {
+    func createIssue(title: String, description: String, priority: IssuePriority = .medium, imageURLs: [URL] = [], isRecurring: Bool = false, recurringFrequency: PaymentFrequency = .oneTime) {
         let newIssue = Issue(
             title: title,
             description: description,
-            createdBy: "user123"
+            createdBy: "user123",
+            priority: priority,
+            imageURLs: imageURLs,
+            isRecurring: isRecurring,
+            recurringFrequency: recurringFrequency,
+            nextDueDate: isRecurring ? calculateNextDueDate(from: Date(), frequency: recurringFrequency) : nil
         )
         issues.append(newIssue)
         
+        // Add to history
+        let historyDescription = isRecurring 
+            ? "Created recurring maintenance request: '\(title)'"
+            : "Created maintenance request: '\(title)'"
+        
+        historyService.addHistoryItem(item: HistoryItem(
+            activityType: .issue,
+            description: historyDescription,
+            relatedItemId: newIssue.id
+        ))
+        
         // In a real app, this would be sent to a backend API
+    }
+    
+    // Assign an issue to someone
+    func assignIssue(issue: Issue, to assignee: String) {
+        if let index = issues.firstIndex(where: { $0.id == issue.id }) {
+            var updatedIssue = issue
+            updatedIssue.assignedTo = assignee
+            issues[index] = updatedIssue
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .issue,
+                description: "Maintenance request '\(issue.title)' assigned to \(assignee)",
+                relatedItemId: issue.id
+            ))
+        }
+    }
+    
+    // Update the status of an issue
+    func updateIssueStatus(issue: Issue, status: IssueStatus) {
+        if let index = issues.firstIndex(where: { $0.id == issue.id }) {
+            var updatedIssue = issue
+            let oldStatus = updatedIssue.status
+            updatedIssue.status = status
+            issues[index] = updatedIssue
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .issue,
+                description: "Maintenance request '\(issue.title)' status changed from \(oldStatus.rawValue) to \(status.rawValue)",
+                relatedItemId: issue.id
+            ))
+            
+            // If a recurring issue is resolved/closed, create the next occurrence
+            if (status == .resolved || status == .closed) && 
+               (oldStatus == .open || oldStatus == .inProgress) && 
+               updatedIssue.isRecurring,
+               let nextDueDate = updatedIssue.nextDueDate {
+                
+                let nextIssue = Issue(
+                    title: updatedIssue.title,
+                    description: updatedIssue.description,
+                    createdDate: nextDueDate,
+                    status: .open,
+                    createdBy: updatedIssue.createdBy,
+                    priority: updatedIssue.priority,
+                    assignedTo: updatedIssue.assignedTo,
+                    imageURLs: [],
+                    isRecurring: true,
+                    recurringFrequency: updatedIssue.recurringFrequency,
+                    nextDueDate: calculateNextDueDate(from: nextDueDate, frequency: updatedIssue.recurringFrequency)
+                )
+                issues.append(nextIssue)
+                
+                // Add to history
+                historyService.addHistoryItem(item: HistoryItem(
+                    activityType: .issue,
+                    description: "Next occurrence of recurring maintenance request '\(issue.title)' scheduled for \(formattedDate(nextDueDate))",
+                    relatedItemId: nextIssue.id
+                ))
+            }
+        }
+    }
+    
+    // Add images to an existing issue
+    func addImagesToIssue(issue: Issue, imageURLs: [URL]) {
+        if let index = issues.firstIndex(where: { $0.id == issue.id }) {
+            var updatedIssue = issue
+            updatedIssue.imageURLs.append(contentsOf: imageURLs)
+            issues[index] = updatedIssue
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .issue,
+                description: "\(imageURLs.count) photo(s) added to maintenance request '\(issue.title)'",
+                relatedItemId: issue.id
+            ))
+        }
+    }
+    
+    // Calculate next due date based on frequency (reusing logic from PaymentService)
+    private func calculateNextDueDate(from date: Date, frequency: PaymentFrequency) -> Date? {
+        let calendar = Calendar.current
+        var dateComponents = DateComponents()
+        
+        switch frequency {
+        case .weekly:
+            dateComponents.day = 7
+        case .monthly:
+            dateComponents.month = 1
+        case .quarterly:
+            dateComponents.month = 3
+        case .annually:
+            dateComponents.year = 1
+        case .oneTime:
+            return nil
+        }
+        
+        return calendar.date(byAdding: dateComponents, to: date)
+    }
+    
+    // Format date for display
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
 }
 
@@ -301,6 +448,16 @@ class HistoryService: ObservableObject {
                 activityType: .videoUpload,
                 description: "Uploaded video: 'Project update - March'",
                 date: Date().addingTimeInterval(-86400 * 14) // 14 days ago
+            ),
+            HistoryItem(
+                activityType: .issue,
+                description: "Maintenance request 'Leaking kitchen faucet' assigned to maintenance1",
+                date: Date().addingTimeInterval(-86400 * 1) // 1 day ago
+            ),
+            HistoryItem(
+                activityType: .issue,
+                description: "Created recurring maintenance request: 'Monthly pest control'",
+                date: Date().addingTimeInterval(-86400 * 10) // 10 days ago
             )
         ]
     }
