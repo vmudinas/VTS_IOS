@@ -15,6 +15,10 @@ VTS_IOS is an iOS application that demonstrates the use of SwiftUI to create a u
 ### Payments
 - View upcoming payments scheduled by administrators
 - Payment details include amount, due date, description, and payment status
+- Process payments using Stripe, PayPal, or Apple Pay
+- Set up recurring payments with flexible scheduling options
+- Receive automated reminders for upcoming payments
+- Process full or partial refunds for completed payments
 
 ### Issues
 - Create new issues with title and description
@@ -130,6 +134,9 @@ To fully support this application, the backend should implement the following AP
 - `GET /api/payments` - Get list of upcoming payments for the authenticated user
 - `GET /api/payments/{id}` - Get details of a specific payment
 - `PUT /api/payments/{id}/pay` - Mark a payment as paid
+- `POST /api/payments/{id}/refund` - Process refund for a payment
+- `POST /api/payments/recurring` - Set up recurring payment
+- `PUT /api/payments/{id}/recurring/cancel` - Cancel a recurring payment
 
 ### Issues API
 - `GET /api/issues` - Get list of issues
@@ -158,7 +165,13 @@ To fully support this application, the backend should implement the following AP
   "dueDate": "date",
   "description": "string",
   "assignedTo": "string",
-  "isPaid": "boolean"
+  "isPaid": "boolean",
+  "paymentMethod": "string",
+  "isRecurring": "boolean",
+  "paymentFrequency": "string",
+  "hasRefund": "boolean",
+  "refundAmount": "number",
+  "nextDueDate": "date"
 }
 ```
 
@@ -200,7 +213,13 @@ To fully support this application, the backend should implement the following AP
 
 ## Dependencies
 
-This project does not use any third-party dependencies or package managers like CocoaPods, Carthage, or Swift Package Manager. It is a self-contained project using only Apple's standard iOS frameworks.
+This project uses the following third-party dependencies:
+
+- **Stripe SDK** - For processing credit card payments securely
+- **PayPal SDK** - For processing PayPal payments
+- **Apple Pay** - Using Apple's native payment system
+
+These dependencies can be installed using Swift Package Manager or CocoaPods. Configuration details are included in the project settings.
 
 ## Licenses
 
