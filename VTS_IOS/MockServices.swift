@@ -437,6 +437,137 @@ class VideoService: ObservableObject {
     }
 }
 
+// Mock service for handling document management
+class DocumentService: ObservableObject {
+    @Published var documents: [Document] = []
+    @Published var uploadProgress: Float = 0
+    @Published var isUploading: Bool = false
+    private let historyService = HistoryService()
+    
+    init() {
+        // Load sample data
+        loadSampleDocuments()
+    }
+    
+    func loadSampleDocuments() {
+        documents = [
+            Document(
+                title: "Apartment 3B Lease",
+                description: "Annual lease agreement for Apartment 3B",
+                documentType: .lease,
+                uploadDate: Date().addingTimeInterval(-86400 * 30), // 30 days ago
+                fileURL: URL(string: "https://example.com/documents/lease_3b.pdf"),
+                signatureStatus: .completed,
+                signedDate: Date().addingTimeInterval(-86400 * 28), // 28 days ago
+                signedBy: "tenant123",
+                relatedEntityId: "property_3b"
+            ),
+            Document(
+                title: "Unit 5C Move-in Checklist",
+                description: "Detailed condition report for Unit 5C",
+                documentType: .moveInChecklist,
+                uploadDate: Date().addingTimeInterval(-86400 * 15), // 15 days ago
+                fileURL: URL(string: "https://example.com/documents/checklist_5c.pdf"),
+                signatureStatus: .pending,
+                relatedEntityId: "property_5c"
+            ),
+            Document(
+                title: "Lease Renewal - Smith Family",
+                description: "Annual lease renewal for Smith family residence",
+                documentType: .renewalAgreement,
+                uploadDate: Date().addingTimeInterval(-86400 * 5), // 5 days ago
+                fileURL: URL(string: "https://example.com/documents/renewal_smith.pdf"),
+                signatureStatus: .pending,
+                relatedEntityId: "property_smith"
+            )
+        ]
+    }
+    
+    // In a real app, this would upload document data to a server
+    func uploadDocument(title: String, description: String, documentType: DocumentType, fileURL: URL, signatureRequired: Bool = false, relatedEntityId: String? = nil, completion: @escaping (Bool) -> Void) {
+        // Simulate network request
+        isUploading = true
+        uploadProgress = 0
+        
+        // Create a new document object
+        let newDocument = Document(
+            title: title,
+            description: description,
+            documentType: documentType,
+            fileURL: fileURL,
+            signatureStatus: signatureRequired ? .pending : .notRequired,
+            relatedEntityId: relatedEntityId
+        )
+        
+        documents.append(newDocument)
+        
+        // Simulate upload progress
+        var progress: Float = 0
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+            progress += 0.1
+            self.uploadProgress = min(progress, 1.0)
+            
+            if progress >= 1.0 {
+                timer.invalidate()
+                self.isUploading = false
+                
+                // Add to history
+                self.historyService.addHistoryItem(item: HistoryItem(
+                    activityType: .document,
+                    description: "Uploaded document: '\(title)'",
+                    relatedItemId: newDocument.id
+                ))
+                
+                completion(true)
+            }
+        }
+    }
+    
+    // Process document signature
+    func signDocument(document: Document, signedBy: String, completion: @escaping (Bool) -> Void) {
+        if let index = documents.firstIndex(where: { $0.id == document.id }) {
+            var signedDocument = document
+            signedDocument.signatureStatus = .completed
+            signedDocument.signedDate = Date()
+            signedDocument.signedBy = signedBy
+            
+            documents[index] = signedDocument
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .document,
+                description: "Document '\(document.title)' signed by \(signedBy)",
+                relatedItemId: document.id
+            ))
+            
+            completion(true)
+        } else {
+            completion(false)
+        }
+    }
+    
+    // Reject document signature
+    func rejectDocument(document: Document, rejectedBy: String, reason: String, completion: @escaping (Bool) -> Void) {
+        if let index = documents.firstIndex(where: { $0.id == document.id }) {
+            var rejectedDocument = document
+            rejectedDocument.signatureStatus = .rejected
+            
+            documents[index] = rejectedDocument
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .document,
+                description: "Document '\(document.title)' rejected by \(rejectedBy). Reason: \(reason)",
+                relatedItemId: document.id
+            ))
+            
+            completion(true)
+        } else {
+            completion(false)
+        }
+    }
+}
+
 // Mock service for handling history
 class HistoryService: ObservableObject {
     @Published var historyItems: [HistoryItem] = []
@@ -472,6 +603,16 @@ class HistoryService: ObservableObject {
                 activityType: .issue,
                 description: "Created recurring maintenance request: 'Monthly pest control'",
                 date: Date().addingTimeInterval(-86400 * 10) // 10 days ago
+            ),
+            HistoryItem(
+                activityType: .document,
+                description: "Uploaded document: 'Apartment 3B Lease'",
+                date: Date().addingTimeInterval(-86400 * 30) // 30 days ago
+            ),
+            HistoryItem(
+                activityType: .document,
+                description: "Document 'Apartment 3B Lease' signed by tenant123",
+                date: Date().addingTimeInterval(-86400 * 28) // 28 days ago
             )
         ]
     }
