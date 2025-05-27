@@ -1,5 +1,7 @@
 # VTS_IOS
 
+![iOS Tests](https://github.com/vmudinas/VTS_IOS/workflows/iOS%20Tests/badge.svg)
+
 A SwiftUI iOS application for managing payments, issues, and uploading videos.
 
 ## Project Overview
@@ -94,6 +96,15 @@ VTS_IOS is an iOS application that demonstrates the use of SwiftUI to create a u
      ```
 
 ## Building and Running the App
+
+### Continuous Integration/Continuous Deployment
+
+This project uses GitHub Actions for CI/CD. The workflow:
+- Automatically builds and tests the app on every PR and push to main
+- Provides test results and code coverage reports
+- Ensures code quality before merging
+
+For more details, see [CI/CD Documentation](.github/workflows/README.md).
 
 ### Running in Development Mode
 
