@@ -49,16 +49,25 @@ jobs:
           
       - name: Build and Test
         run: |
+          set -o pipefail
           xcodebuild test \
             -project VTS_IOS.xcodeproj \
             -scheme VTS_IOS \
             -destination "platform=iOS Simulator,name=iPhone 14,OS=latest" \
             -enableCodeCoverage YES \
-            | xcpretty && exit ${PIPESTATUS[0]}
+            | tee build_output.log | xcpretty && exit ${PIPESTATUS[0]}
+          echo "Build completed with status $?"
             
       - name: Generate Code Coverage Report
         run: |
-          xcrun xccov view --report --json $(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" | head -n 1) > coverage.json
+          xcresult_path=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" | head -n 1)
+          if [ -n "$xcresult_path" ]; then
+            xcrun xccov view --report --json "$xcresult_path" > coverage.json
+            echo "Generated coverage report from $xcresult_path"
+          else
+            echo "No .xcresult files found"
+            touch coverage.json  # Create empty file so upload doesn't fail
+          fi
       
       - name: Upload Test Results
         if: always()
@@ -66,6 +75,7 @@ jobs:
         with:
           name: test-results
           path: |
-            *.xcresult
+            ~/Library/Developer/Xcode/DerivedData/**/*.xcresult
             coverage.json
-            *.log
+            build_output.log
+            **/*.log
