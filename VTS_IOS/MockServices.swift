@@ -25,21 +25,24 @@ class PaymentService: ObservableObject {
                 isPaid: false,
                 isRecurring: true,
                 paymentFrequency: .monthly,
-                nextDueDate: calendar.date(byAdding: .month, value: 1, to: Date()) ?? Date()
+                nextDueDate: calendar.date(byAdding: .month, value: 1, to: Date()) ?? Date(),
+                category: .fee
             ),
             Payment(
                 amount: 85.50,
                 dueDate: calendar.date(byAdding: .day, value: 7, to: Date()) ?? Date(),
                 description: "Equipment rental",
                 assignedTo: "user123",
-                isPaid: false
+                isPaid: false,
+                category: .expense
             ),
             Payment(
                 amount: 250.00,
                 dueDate: calendar.date(byAdding: .day, value: 14, to: Date()) ?? Date(),
                 description: "Annual maintenance",
                 assignedTo: "user123",
-                isPaid: false
+                isPaid: false,
+                category: .maintenance
             )
         ]
         
@@ -51,7 +54,8 @@ class PaymentService: ObservableObject {
                 description: "Previous service fee",
                 assignedTo: "user123",
                 isPaid: true,
-                paymentMethod: .stripe
+                paymentMethod: .stripe,
+                category: .fee
             ),
             Payment(
                 amount: 45.75,
@@ -64,7 +68,36 @@ class PaymentService: ObservableObject {
                 refundAmount: 15.25,
                 refundIssuedBy: "landlord123",
                 refundReason: "Equipment returned early",
-                refundDate: calendar.date(byAdding: .day, value: -18, to: Date()) ?? Date()
+                refundDate: calendar.date(byAdding: .day, value: -18, to: Date()) ?? Date(),
+                category: .expense
+            ),
+            // Add more sample payments for financial reporting
+            Payment(
+                amount: 500.00,
+                dueDate: calendar.date(byAdding: .day, value: -30, to: Date()) ?? Date(),
+                description: "Monthly Rent - Unit 101",
+                assignedTo: "landlord123",
+                isPaid: true,
+                paymentMethod: .bankTransfer,
+                category: .rent
+            ),
+            Payment(
+                amount: 45.00,
+                dueDate: calendar.date(byAdding: .day, value: -25, to: Date()) ?? Date(),
+                description: "Water Bill",
+                assignedTo: "user123",
+                isPaid: true,
+                paymentMethod: .applePay,
+                category: .utilities
+            ),
+            Payment(
+                amount: 150.00,
+                dueDate: calendar.date(byAdding: .day, value: -40, to: Date()) ?? Date(),
+                description: "Insurance Premium",
+                assignedTo: "user123",
+                isPaid: true,
+                paymentMethod: .stripe,
+                category: .insurance
             )
         ]
     }
@@ -170,6 +203,92 @@ class PaymentService: ObservableObject {
         }
         
         return calendar.date(byAdding: dateComponents, to: date)
+    }
+    
+    // MARK: - Financial Reporting Methods
+    
+    // Get all transactions for a date range
+    func getTransactions(from startDate: Date, to endDate: Date) -> [Payment] {
+        return paymentHistory.filter { payment in
+            let date = payment.isPaid ? payment.dueDate : payment.dueDate
+            return date >= startDate && date <= endDate
+        }
+    }
+    
+    // Calculate total income for a date range
+    func calculateIncome(from startDate: Date, to endDate: Date) -> Double {
+        let transactions = getTransactions(from: startDate, to: endDate)
+        return transactions
+            .filter { $0.category?.isIncome == true }
+            .reduce(0) { $0 + $1.amount }
+    }
+    
+    // Calculate total expenses for a date range
+    func calculateExpenses(from startDate: Date, to endDate: Date) -> Double {
+        let transactions = getTransactions(from: startDate, to: endDate)
+        return transactions
+            .filter { $0.category?.isIncome == false }
+            .reduce(0) { $0 + $1.amount }
+    }
+    
+    // Calculate profit/loss for a date range
+    func calculateProfitLoss(from startDate: Date, to endDate: Date) -> Double {
+        let income = calculateIncome(from: startDate, to: endDate)
+        let expenses = calculateExpenses(from: startDate, to: endDate)
+        return income - expenses
+    }
+    
+    // Get income breakdown by category
+    func incomeByCategory(from startDate: Date, to endDate: Date) -> [PaymentCategory: Double] {
+        let transactions = getTransactions(from: startDate, to: endDate)
+            .filter { $0.category?.isIncome == true }
+        
+        var result: [PaymentCategory: Double] = [:]
+        
+        for transaction in transactions {
+            if let category = transaction.category {
+                result[category, default: 0] += transaction.amount
+            }
+        }
+        
+        return result
+    }
+    
+    // Get expenses breakdown by category
+    func expensesByCategory(from startDate: Date, to endDate: Date) -> [PaymentCategory: Double] {
+        let transactions = getTransactions(from: startDate, to: endDate)
+            .filter { $0.category?.isIncome == false }
+        
+        var result: [PaymentCategory: Double] = [:]
+        
+        for transaction in transactions {
+            if let category = transaction.category {
+                result[category, default: 0] += transaction.amount
+            }
+        }
+        
+        return result
+    }
+    
+    // Export data as CSV
+    func exportToCSV(from startDate: Date, to endDate: Date) -> String {
+        let transactions = getTransactions(from: startDate, to: endDate)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        
+        var csv = "Date,Description,Amount,Category,Type\n"
+        
+        for payment in transactions {
+            let date = dateFormatter.string(from: payment.dueDate)
+            let description = payment.description.replacingOccurrences(of: ",", with: ";")
+            let amount = String(format: "%.2f", payment.amount)
+            let category = payment.category?.rawValue ?? "Uncategorized"
+            let type = payment.category?.isIncome == true ? "Income" : "Expense"
+            
+            csv += "\(date),\"\(description)\",\(amount),\"\(category)\",\(type)\n"
+        }
+        
+        return csv
     }
 }
 

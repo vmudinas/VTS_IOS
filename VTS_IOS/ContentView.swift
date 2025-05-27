@@ -12,6 +12,12 @@ struct ContentView: View {
                 }
                 .accessibilityLabel("Payments Tab")
             
+            FinancialReportView()
+                .tabItem {
+                    Label("Finances", systemImage: "chart.bar.fill")
+                }
+                .accessibilityLabel("Financial Reports Tab")
+            
             IssuesView()
                 .tabItem {
                     Label("Maintenance", systemImage: "wrench.fill")
@@ -49,6 +55,7 @@ struct ContentView: View {
                 .accessibilityLabel("User Profile Tab")
         }
         .accentColor(Color(.systemBlue))
+    }
     }
 }
 
