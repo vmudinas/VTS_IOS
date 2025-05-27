@@ -29,6 +29,35 @@ enum PaymentMethod: String, CaseIterable {
     case bankTransfer = "Bank Transfer"
 }
 
+// Payment category for financial reporting
+enum PaymentCategory: String, CaseIterable {
+    // Income categories
+    case rent = "Rent Income"
+    case deposit = "Security Deposit"
+    case fee = "Fees Income"
+    case other = "Other Income"
+    
+    // Expense categories
+    case maintenance = "Maintenance"
+    case utilities = "Utilities"
+    case insurance = "Insurance"
+    case tax = "Taxes"
+    case refund = "Refund"
+    case service = "Services"
+    case management = "Management"
+    case expense = "Other Expense"
+    
+    // Check if this is an income or expense category
+    var isIncome: Bool {
+        switch self {
+        case .rent, .deposit, .fee, .other:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 // Payment frequency for recurring payments
 enum PaymentFrequency: String, CaseIterable {
     case oneTime = "One Time"
@@ -55,8 +84,9 @@ struct Payment: Identifiable {
     var refundReason: String? // Reason for refund
     var refundDate: Date? // When the refund was issued
     var nextDueDate: Date?
+    var category: PaymentCategory? // Category for financial reporting
     
-    init(id: UUID = UUID(), amount: Double, dueDate: Date, description: String, assignedTo: String, isPaid: Bool = false, paymentMethod: PaymentMethod? = nil, isRecurring: Bool = false, paymentFrequency: PaymentFrequency = .oneTime, hasRefund: Bool = false, refundAmount: Double? = nil, refundIssuedBy: String? = nil, refundReason: String? = nil, refundDate: Date? = nil, nextDueDate: Date? = nil) {
+    init(id: UUID = UUID(), amount: Double, dueDate: Date, description: String, assignedTo: String, isPaid: Bool = false, paymentMethod: PaymentMethod? = nil, isRecurring: Bool = false, paymentFrequency: PaymentFrequency = .oneTime, hasRefund: Bool = false, refundAmount: Double? = nil, refundIssuedBy: String? = nil, refundReason: String? = nil, refundDate: Date? = nil, nextDueDate: Date? = nil, category: PaymentCategory? = nil) {
         self.id = id
         self.amount = amount
         self.dueDate = dueDate
@@ -72,6 +102,7 @@ struct Payment: Identifiable {
         self.refundReason = refundReason
         self.refundDate = refundDate
         self.nextDueDate = nextDueDate
+        self.category = category
     }
 }
 
