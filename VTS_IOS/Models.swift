@@ -203,6 +203,7 @@ enum ActivityType: String {
     case videoUpload = "Video Upload"
     case document = "Document"
     case message = "Message"
+    case property = "Property"
 }
 
 // Document type enum to represent different kinds of documents
@@ -245,5 +246,30 @@ struct Document: Identifiable {
         self.signedDate = signedDate
         self.signedBy = signedBy
         self.relatedEntityId = relatedEntityId
+    }
+}
+
+// Property model to represent real estate properties
+struct Property: Identifiable {
+    let id: UUID
+    let name: String
+    let address: String
+    let description: String
+    let latitude: Double
+    let longitude: Double
+    let createdBy: String
+    var tenantEmail: String?
+    var tenantPhone: String?
+    
+    init(id: UUID = UUID(), name: String, address: String, description: String, latitude: Double, longitude: Double, createdBy: String, tenantEmail: String? = nil, tenantPhone: String? = nil) {
+        self.id = id
+        self.name = name
+        self.address = address
+        self.description = description
+        self.latitude = latitude
+        self.longitude = longitude
+        self.createdBy = createdBy
+        self.tenantEmail = tenantEmail
+        self.tenantPhone = tenantPhone
     }
 }

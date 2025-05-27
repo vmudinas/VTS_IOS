@@ -48,6 +48,12 @@ struct ContentView: View {
                 }
                 .accessibilityLabel("Activity History Tab")
             
+            MapView(authentication: authentication)
+                .tabItem {
+                    Label("Maps", systemImage: "map.fill")
+                }
+                .accessibilityLabel("Maps Tab")
+            
             ProfileView(authentication: authentication)
                 .tabItem {
                     Label("Profile", systemImage: "person.fill")
