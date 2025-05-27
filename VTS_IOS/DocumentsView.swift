@@ -5,6 +5,7 @@ struct DocumentsView: View {
     @State private var showingDocumentUploadForm = false
     @State private var showingDocumentPickerSheet = false
     @State private var selectedDocumentURL: URL? = nil
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         NavigationView {
@@ -24,7 +25,7 @@ struct DocumentsView: View {
                     }
                 }
                 
-                Section(header: Text("Documents")) {
+                Section(header: Text(localization.localized("documents"))) {
                     ForEach(documentService.documents) { document in
                         NavigationLink(destination: DocumentDetailView(document: document)) {
                             DocumentRowView(document: document)
@@ -33,7 +34,7 @@ struct DocumentsView: View {
                 }
             }
             .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Documents")
+            .navigationTitle(localization.localized("documents"))
             .navigationBarItems(
                 trailing: Button(action: {
                     showingDocumentUploadForm = true
@@ -138,6 +139,7 @@ struct DocumentDetailView: View {
     @State private var showingSignatureConfirmation = false
     @State private var showingRejectionConfirmation = false
     @State private var rejectionReason = ""
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         ScrollView {
@@ -246,7 +248,7 @@ struct DocumentDetailView: View {
             }
             .padding()
         }
-        .navigationBarTitle("Document Details", displayMode: .inline)
+        .navigationBarTitle(localization.localized("document_details"), displayMode: .inline)
         .alert("Sign Document", isPresented: $showingSignatureConfirmation) {
             Button("Cancel", role: .cancel) {}
             Button("Sign") {
@@ -359,7 +361,7 @@ struct DocumentUploadView: View {
                     .buttonStyle(.bordered)
                 }
             }
-            .navigationTitle("Upload Document")
+            .navigationTitle(localization.localized("upload_document"))
             .navigationBarItems(
                 leading: Button("Cancel") {
                     isPresented = false

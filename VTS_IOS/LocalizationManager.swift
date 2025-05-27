@@ -128,7 +128,10 @@ class LocalizationManager: ObservableObject {
                 "via": "via",
                 "refunded": "Refunded",
                 "back": "Back",
-                "done": "Done"
+                "done": "Done",
+                "message_placeholder": "Type a message...",
+                "document_details": "Document Details",
+                "upload_document": "Upload Document"
             ],
             "es": [
                 "payment": "Pago",
@@ -173,7 +176,10 @@ class LocalizationManager: ObservableObject {
                 "via": "vía",
                 "refunded": "Reembolsado",
                 "back": "Atrás",
-                "done": "Hecho"
+                "done": "Hecho",
+                "message_placeholder": "Escribe un mensaje...",
+                "document_details": "Detalles del documento",
+                "upload_document": "Subir documento"
             ],
             "fr": [
                 "payment": "Paiement",
@@ -218,7 +224,10 @@ class LocalizationManager: ObservableObject {
                 "via": "via",
                 "refunded": "Remboursé",
                 "back": "Retour",
-                "done": "Terminé"
+                "done": "Terminé",
+                "message_placeholder": "Écrivez un message...",
+                "document_details": "Détails du document",
+                "upload_document": "Télécharger un document"
             ],
             "de": [
                 "payment": "Zahlung",
@@ -263,7 +272,10 @@ class LocalizationManager: ObservableObject {
                 "via": "über",
                 "refunded": "Erstattet",
                 "back": "Zurück",
-                "done": "Fertig"
+                "done": "Fertig",
+                "message_placeholder": "Nachricht eingeben...",
+                "document_details": "Dokumentdetails",
+                "upload_document": "Dokument hochladen"
             ],
             "zh": [
                 "payment": "支付",
@@ -308,7 +320,10 @@ class LocalizationManager: ObservableObject {
                 "via": "通过",
                 "refunded": "已退款",
                 "back": "返回",
-                "done": "完成"
+                "done": "完成",
+                "message_placeholder": "输入消息...",
+                "document_details": "文档详情",
+                "upload_document": "上传文档"
             ]
         ]
         
