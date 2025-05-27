@@ -24,6 +24,13 @@ VTS_IOS is an iOS application that demonstrates the use of SwiftUI to create a u
 - Create new issues with title and description
 - View existing issues with status indicators
 - Issues can be in various states: Open, In Progress, Resolved, Closed
+- Advanced maintenance tracking features:
+  - Priority levels (Low, Medium, High, Urgent) with estimated response times
+  - Recurring maintenance tasks with configurable frequencies
+  - Contractor service integration for specialized maintenance
+  - Cost tracking with estimated and actual costs
+  - Detailed task notes and completion tracking
+  - Ability to skip occurrences for recurring maintenance
 
 ### Messages
 - Direct messaging system between landlords and tenants
@@ -159,6 +166,10 @@ To fully support this application, the backend should implement the following AP
 - `POST /api/issues` - Create a new issue
 - `PUT /api/issues/{id}` - Update an existing issue
 - `PUT /api/issues/{id}/status` - Update issue status
+- `POST /api/issues/{id}/contractors` - Assign contractor to an issue
+- `PUT /api/issues/{id}/costs` - Update cost estimates and actual costs
+- `POST /api/issues/{id}/notes` - Add notes to an issue
+- `PUT /api/issues/{id}/skip` - Skip next occurrence of a recurring issue
 
 ### Messages API
 - `GET /api/messages` - Get list of messages for the authenticated user
@@ -214,7 +225,35 @@ To fully support this application, the backend should implement the following AP
   "description": "string",
   "createdDate": "date",
   "status": "string",
-  "createdBy": "string"
+  "createdBy": "string",
+  "priority": "string",
+  "assignedTo": "string",
+  "imageURLs": ["string"],
+  "isRecurring": "boolean",
+  "recurringFrequency": "string",
+  "nextDueDate": "date",
+  "contractorId": "string",
+  "estimatedCost": "number",
+  "actualCost": "number",
+  "completionDate": "date",
+  "skipNextOccurrence": "boolean",
+  "notes": "string",
+  "propertyId": "string"
+}
+```
+
+**Contractor**
+```json
+{
+  "id": "string",
+  "name": "string",
+  "company": "string",
+  "specialties": ["string"],
+  "email": "string",
+  "phone": "string",
+  "hourlyRate": "number",
+  "isPreferred": "boolean",
+  "rating": "number"
 }
 ```
 

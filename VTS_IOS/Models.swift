@@ -112,6 +112,20 @@ enum IssuePriority: String, CaseIterable {
     case medium = "Medium"
     case high = "High"
     case urgent = "Urgent"
+    
+    // Estimated response time for each priority level
+    var estimatedResponseTime: String {
+        switch self {
+        case .low:
+            return "Within 7 days"
+        case .medium:
+            return "Within 3 days"
+        case .high:
+            return "Within 24 hours"
+        case .urgent:
+            return "Within 4 hours"
+        }
+    }
 }
 
 // Issue model to represent user created issues and maintenance requests
@@ -128,8 +142,15 @@ struct Issue: Identifiable {
     var isRecurring: Bool
     var recurringFrequency: PaymentFrequency
     var nextDueDate: Date?
+    var contractorId: UUID?
+    var estimatedCost: Double?
+    var actualCost: Double?
+    var completionDate: Date?
+    var skipNextOccurrence: Bool
+    var notes: String?
+    var propertyId: UUID?
     
-    init(id: UUID = UUID(), title: String, description: String, createdDate: Date = Date(), status: IssueStatus = .open, createdBy: String, priority: IssuePriority = .medium, assignedTo: String? = nil, imageURLs: [URL] = [], isRecurring: Bool = false, recurringFrequency: PaymentFrequency = .oneTime, nextDueDate: Date? = nil) {
+    init(id: UUID = UUID(), title: String, description: String, createdDate: Date = Date(), status: IssueStatus = .open, createdBy: String, priority: IssuePriority = .medium, assignedTo: String? = nil, imageURLs: [URL] = [], isRecurring: Bool = false, recurringFrequency: PaymentFrequency = .oneTime, nextDueDate: Date? = nil, contractorId: UUID? = nil, estimatedCost: Double? = nil, actualCost: Double? = nil, completionDate: Date? = nil, skipNextOccurrence: Bool = false, notes: String? = nil, propertyId: UUID? = nil) {
         self.id = id
         self.title = title
         self.description = description
@@ -142,6 +163,13 @@ struct Issue: Identifiable {
         self.isRecurring = isRecurring
         self.recurringFrequency = recurringFrequency
         self.nextDueDate = nextDueDate
+        self.contractorId = contractorId
+        self.estimatedCost = estimatedCost
+        self.actualCost = actualCost
+        self.completionDate = completionDate
+        self.skipNextOccurrence = skipNextOccurrence
+        self.notes = notes
+        self.propertyId = propertyId
     }
 }
 
@@ -246,6 +274,43 @@ struct Document: Identifiable {
         self.signedDate = signedDate
         self.signedBy = signedBy
         self.relatedEntityId = relatedEntityId
+    }
+}
+
+// Contractor specialty enum for different service types
+enum ContractorSpecialty: String, CaseIterable {
+    case plumbing = "Plumbing"
+    case electrical = "Electrical"
+    case hvac = "HVAC"
+    case general = "General Maintenance"
+    case painting = "Painting"
+    case carpentry = "Carpentry"
+    case landscaping = "Landscaping"
+    case cleaning = "Cleaning"
+}
+
+// Contractor model to represent external service providers
+struct Contractor: Identifiable {
+    let id: UUID
+    let name: String
+    let company: String
+    let specialties: [ContractorSpecialty]
+    let email: String
+    let phone: String
+    var hourlyRate: Double?
+    var isPreferred: Bool
+    var rating: Int? // 1-5 rating
+    
+    init(id: UUID = UUID(), name: String, company: String, specialties: [ContractorSpecialty], email: String, phone: String, hourlyRate: Double? = nil, isPreferred: Bool = false, rating: Int? = nil) {
+        self.id = id
+        self.name = name
+        self.company = company
+        self.specialties = specialties
+        self.email = email
+        self.phone = phone
+        self.hourlyRate = hourlyRate
+        self.isPreferred = isPreferred
+        self.rating = rating
     }
 }
 
