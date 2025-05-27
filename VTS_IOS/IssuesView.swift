@@ -5,6 +5,7 @@ struct IssuesView: View {
     @ObservedObject var issueService = IssueService()
     @State private var showingCreateIssue = false
     @Environment(\.sizeCategory) var sizeCategory
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         NavigationView {
@@ -13,13 +14,13 @@ struct IssuesView: View {
                     NavigationLink(destination: IssueDetailView(issueService: issueService, issue: issue)) {
                         IssueRowView(issue: issue)
                             .accessibilityElement(children: .combine)
-                            .accessibilityLabel("Issue: \(issue.title), Status: \(issue.status.rawValue)")
+                            .accessibilityLabel("\(localization.localized("issue")): \(issue.title), Status: \(issue.status.rawValue)")
                             .accessibilityHint("Double tap to view details")
                     }
                 }
             }
             .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Maintenance Requests")
+            .navigationTitle(localization.localized("maintenance"))
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {

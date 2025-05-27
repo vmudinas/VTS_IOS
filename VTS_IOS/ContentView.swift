@@ -3,62 +3,63 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var authentication: UserAuthentication
     @Environment(\.sizeCategory) var sizeCategory
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         TabView {
             PaymentsView()
                 .tabItem {
-                    Label("Payments", systemImage: "dollarsign.circle.fill")
+                    Label(localization.localized("payments"), systemImage: "dollarsign.circle.fill")
                 }
-                .accessibilityLabel("Payments Tab")
+                .accessibilityLabel("\(localization.localized("payments")) Tab")
             
             FinancialReportView()
                 .tabItem {
-                    Label("Finances", systemImage: "chart.bar.fill")
+                    Label(localization.localized("finances"), systemImage: "chart.bar.fill")
                 }
-                .accessibilityLabel("Financial Reports Tab")
+                .accessibilityLabel("\(localization.localized("finances")) Tab")
             
             IssuesView()
                 .tabItem {
-                    Label("Maintenance", systemImage: "wrench.fill")
+                    Label(localization.localized("maintenance"), systemImage: "wrench.fill")
                 }
-                .accessibilityLabel("Maintenance Requests Tab")
+                .accessibilityLabel("\(localization.localized("maintenance")) Tab")
             
             DocumentsView()
                 .tabItem {
-                    Label("Documents", systemImage: "doc.fill")
+                    Label(localization.localized("documents"), systemImage: "doc.fill")
                 }
-                .accessibilityLabel("Documents Tab")
+                .accessibilityLabel("\(localization.localized("documents")) Tab")
             
             MessagesView()
                 .tabItem {
-                    Label("Messages", systemImage: "message.fill")
+                    Label(localization.localized("messages"), systemImage: "message.fill")
                 }
-                .accessibilityLabel("Messages Tab")
+                .accessibilityLabel("\(localization.localized("messages")) Tab")
             
             VideoUploadView()
                 .tabItem {
-                    Label("Videos", systemImage: "video.fill")
+                    Label(localization.localized("videos"), systemImage: "video.fill")
                 }
-                .accessibilityLabel("Video Upload Tab")
+                .accessibilityLabel("\(localization.localized("videos")) Tab")
             
             HistoryView()
                 .tabItem {
-                    Label("History", systemImage: "clock.fill")
+                    Label(localization.localized("history"), systemImage: "clock.fill")
                 }
-                .accessibilityLabel("Activity History Tab")
+                .accessibilityLabel("\(localization.localized("history")) Tab")
             
             MapView(authentication: authentication)
                 .tabItem {
-                    Label("Maps", systemImage: "map.fill")
+                    Label(localization.localized("maps"), systemImage: "map.fill")
                 }
-                .accessibilityLabel("Maps Tab")
+                .accessibilityLabel("\(localization.localized("maps")) Tab")
             
             ProfileView(authentication: authentication)
                 .tabItem {
-                    Label("Profile", systemImage: "person.fill")
+                    Label(localization.localized("profile"), systemImage: "person.fill")
                 }
-                .accessibilityLabel("User Profile Tab")
+                .accessibilityLabel("\(localization.localized("profile")) Tab")
         }
         .accentColor(Color(.systemBlue))
     }
@@ -69,6 +70,8 @@ struct ProfileView: View {
     @ObservedObject var authentication: UserAuthentication
     @Environment(\.sizeCategory) var sizeCategory
     @State private var showLogoutConfirmation = false
+    @State private var showLanguageSheet = false
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         NavigationView {
@@ -82,34 +85,54 @@ struct ProfileView: View {
                         .padding()
                         .accessibilityHidden(true) // Hidden because it's decorative
                     
-                    Text("Welcome to VTS iOS App")
+                    Text(localization.localized("welcome"))
                         .font(.title)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                         .accessibilityAddTraits(.isHeader)
                     
-                    Text("You are logged in as \(authentication.currentUsername)")
+                    Text("\(localization.localized("logged_in_as")) \(authentication.currentUsername)")
                         .font(.body)
                         .foregroundColor(Color(.secondaryLabel))
                         .padding(.bottom, 8)
                     
                     // User information would go here in a real app
                     VStack(alignment: .leading, spacing: 12) {
-                        ProfileInfoRow(icon: "envelope.fill", label: "Email", value: "user@example.com")
-                        ProfileInfoRow(icon: "phone.fill", label: "Phone", value: "(555) 123-4567")
-                        ProfileInfoRow(icon: "building.2.fill", label: "Company", value: "VTS Inc.")
+                        ProfileInfoRow(icon: "envelope.fill", label: localization.localized("email"), value: "user@example.com")
+                        ProfileInfoRow(icon: "phone.fill", label: localization.localized("phone"), value: "(555) 123-4567")
+                        ProfileInfoRow(icon: "building.2.fill", label: localization.localized("company"), value: "VTS Inc.")
                     }
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
                     .padding(.horizontal)
                     
+                    // Language Selection Button
+                    Button(action: {
+                        showLanguageSheet = true
+                    }) {
+                        HStack {
+                            Image(systemName: "globe")
+                                .foregroundColor(.white)
+                            Text(localization.localized("language"))
+                                .font(.headline)
+                                .foregroundColor(.white)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color(.systemBlue))
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                    }
+                    .padding(.top, 20)
+                    .accessibilityHint("Double tap to change language settings")
+                    
                     Spacer()
                     
                     Button(action: {
                         showLogoutConfirmation = true
                     }) {
-                        Label("Logout", systemImage: "rectangle.portrait.and.arrow.right")
+                        Label(localization.localized("logout"), systemImage: "rectangle.portrait.and.arrow.right")
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding()
@@ -123,17 +146,20 @@ struct ProfileView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Profile")
+            .navigationTitle(localization.localized("profile"))
             .navigationBarTitleDisplayMode(.inline)
-            .alert("Confirm Logout", isPresented: $showLogoutConfirmation) {
-                Button("Cancel", role: .cancel) {}
-                Button("Logout", role: .destructive) {
+            .alert(localization.localized("confirm_logout"), isPresented: $showLogoutConfirmation) {
+                Button(localization.localized("cancel"), role: .cancel) {}
+                Button(localization.localized("logout"), role: .destructive) {
                     withAnimation {
                         authentication.logout()
                     }
                 }
             } message: {
-                Text("Are you sure you want to log out?")
+                Text(localization.localized("logout_message"))
+            }
+            .sheet(isPresented: $showLanguageSheet) {
+                LanguageSelectionView(isPresented: $showLanguageSheet)
             }
         }
     }
@@ -180,6 +206,46 @@ struct ContentView_Previews: PreviewProvider {
             ContentView(authentication: UserAuthentication())
                 .environment(\.sizeCategory, .accessibilityLarge)
                 .previewDisplayName("Large Text")
+        }
+    }
+}
+
+struct LanguageSelectionView: View {
+    @Binding var isPresented: Bool
+    @ObservedObject private var localization = LocalizationManager.shared
+    @State private var selectedLanguage: String
+    
+    init(isPresented: Binding<Bool>) {
+        self._isPresented = isPresented
+        self._selectedLanguage = State(initialValue: LocalizationManager.shared.currentLanguageCode)
+    }
+    
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(localization.supportedLanguages.keys.sorted(), id: \.self) { key in
+                    Button(action: {
+                        selectedLanguage = key
+                        localization.changeLanguage(languageCode: key)
+                    }) {
+                        HStack {
+                            Text(localization.supportedLanguages[key] ?? key)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                            
+                            if selectedLanguage == key {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationBarTitle(localization.localized("select_language"), displayMode: .inline)
+            .navigationBarItems(trailing: Button(localization.localized("done")) {
+                isPresented = false
+            })
         }
     }
 }
