@@ -6,11 +6,22 @@ import SwiftUI
 class PaymentService: ObservableObject {
     @Published var upcomingPayments: [Payment] = []
     @Published var paymentHistory: [Payment] = []
+    @Published var isOfflineMode: Bool = false
+    
     let paymentGateway = PaymentGatewayService()
+    private let persistence = PersistenceManager.shared
+    private let notificationManager = NotificationManager.shared
     
     init() {
         // Load sample data
         loadSamplePayments()
+        
+        // Check connectivity
+        checkConnectivity()
+    }
+    
+    func checkConnectivity() {
+        isOfflineMode = persistence.isOffline
     }
     
     func loadSamplePayments() {
@@ -104,8 +115,21 @@ class PaymentService: ObservableObject {
     
     // In a real app, this would make an API call to the backend
     func fetchUpcomingPayments() {
-        // This would be an API call in a real application
-        // For now, we just use the sample data
+        // Check connectivity first
+        checkConnectivity()
+        
+        if isOfflineMode {
+            // In offline mode, we'll use cached data
+            print("Using cached payment data in offline mode")
+        } else {
+            // In a real app, this would be an API call
+            // For this mock, we'll assume we got updated data
+            
+            // Schedule payment reminders for any upcoming payments
+            for payment in upcomingPayments {
+                notificationManager.schedulePaymentReminder(for: payment)
+            }
+        }
     }
     
     // Mark a payment as paid using the selected payment method
@@ -1048,11 +1072,29 @@ class HistoryService: ObservableObject {
 // Mock service for handling messages
 class MessageService: ObservableObject {
     @Published var messages: [Message] = []
+    @Published var pendingMessages: [Message] = [] // Messages drafted offline
+    @Published var isOfflineMode: Bool = false
+    
     private let historyService = HistoryService()
+    private let persistence = PersistenceManager.shared
+    private let notificationManager = NotificationManager.shared
     
     init() {
         // Load sample data
         loadSampleMessages()
+        
+        // Check if we're offline
+        checkConnectivity()
+    }
+    
+    // Check connectivity status
+    func checkConnectivity() {
+        isOfflineMode = persistence.isOffline
+        
+        // If we were offline but now we're online, sync pending messages
+        if !isOfflineMode && !pendingMessages.isEmpty {
+            syncPendingMessages()
+        }
     }
     
     func loadSampleMessages() {
@@ -1088,6 +1130,9 @@ class MessageService: ObservableObject {
                 isRead: false
             )
         ]
+        
+        // Cache messages for offline access
+        persistence.cacheMessages(messages)
     }
     
     // Send a new message and add to history
@@ -1099,14 +1144,54 @@ class MessageService: ObservableObject {
             attachmentURLs: attachments
         )
         
-        messages.append(newMessage)
+        // Check if we're offline
+        checkConnectivity()
         
-        // Add to history
-        historyService.addHistoryItem(item: HistoryItem(
-            activityType: .message,
-            description: "Message sent to \(recipient)",
-            relatedItemId: newMessage.id
-        ))
+        if isOfflineMode {
+            // Store message for syncing later
+            pendingMessages.append(newMessage)
+            
+            // Add to local cache
+            persistence.cacheMessages([newMessage])
+            
+            // Also add to displayed messages so they appear in the UI
+            messages.append(newMessage)
+        } else {
+            // Send message normally (would go to server in real app)
+            messages.append(newMessage)
+            
+            // Schedule notification for recipient
+            notificationManager.scheduleNewMessageNotification(from: sender, content: content)
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .message,
+                description: "Message sent to \(recipient)",
+                relatedItemId: newMessage.id
+            ))
+        }
+    }
+    
+    // Sync pending messages when online
+    func syncPendingMessages() {
+        guard !pendingMessages.isEmpty else { return }
+        
+        let messagesToSync = pendingMessages
+        pendingMessages = []
+        
+        for message in messagesToSync {
+            // In a real app, would send to server here
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .message,
+                description: "Message sent to \(message.recipient) (synced)",
+                relatedItemId: message.id
+            ))
+        }
+        
+        // Notify user of successful sync
+        notificationManager.scheduleSyncCompleteNotification(itemsUpdated: messagesToSync.count)
     }
     
     // Mark a message as read
@@ -1115,6 +1200,9 @@ class MessageService: ObservableObject {
             var updatedMessage = message
             updatedMessage.isRead = true
             messages[index] = updatedMessage
+            
+            // Update cache
+            persistence.cacheMessages([updatedMessage])
         }
     }
     
@@ -1153,6 +1241,18 @@ class MessageService: ObservableObject {
         // Convert to array of tuples (partner, last message)
         return conversationPartners.map { ($0.key, $0.value) }
             .sorted { $0.1.timestamp > $1.1.timestamp }
+    }
+    
+    // Draft a message for offline sending
+    func draftMessage(sender: String, recipient: String, content: String, attachments: [URL]? = nil) {
+        let draftMessage = Message(
+            sender: sender,
+            recipient: recipient,
+            content: content,
+            attachmentURLs: attachments
+        )
+        
+        pendingMessages.append(draftMessage)
     }
 }
 
