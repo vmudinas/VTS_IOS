@@ -5,13 +5,14 @@ struct PaymentsView: View {
     @State private var isShowingPaymentSheet = false
     @State private var isShowingHistorySheet = false
     @State private var selectedPayment: Payment? = nil
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         NavigationView {
             VStack {
-                Picker("Payment View", selection: $isShowingHistorySheet) {
-                    Text("Upcoming").tag(false)
-                    Text("History").tag(true)
+                Picker(localization.localized("payments"), selection: $isShowingHistorySheet) {
+                    Text(localization.localized("upcoming")).tag(false)
+                    Text(localization.localized("history")).tag(true)
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding(.horizontal)
@@ -37,7 +38,7 @@ struct PaymentsView: View {
                     .listStyle(InsetGroupedListStyle())
                 }
             }
-            .navigationBarTitle("Payments", displayMode: .inline)
+            .navigationBarTitle(localization.localized("payments"), displayMode: .inline)
             .sheet(isPresented: $isShowingPaymentSheet) {
                 if let payment = selectedPayment {
                     PaymentDetailView(paymentService: paymentService, payment: payment, isPresented: $isShowingPaymentSheet)

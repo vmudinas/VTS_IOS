@@ -3,6 +3,7 @@ import SwiftUI
 struct LoginView: View {
     @ObservedObject var authentication: UserAuthentication
     @Environment(\.sizeCategory) var sizeCategory
+    @StateObject private var localization = LocalizationManager.shared
     
     @State private var username: String = ""
     @State private var password: String = ""
@@ -38,7 +39,7 @@ struct LoginView: View {
                     
                     // Username Field
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Username")
+                        Text(localization.localized("username"))
                             .font(.callout)
                             .foregroundColor(Color(.secondaryLabel))
                             .accessibilityHidden(true)
@@ -49,7 +50,7 @@ struct LoginView: View {
                                 .frame(width: 20)
                                 .accessibilityHidden(true)
                             
-                            TextField("Username", text: $username)
+                            TextField(localization.localized("username"), text: $username)
                                 .focused($focusedField, equals: .username)
                                 .textContentType(.username)
                                 .autocapitalization(.none)
@@ -71,7 +72,7 @@ struct LoginView: View {
                     
                     // Password Field
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Password")
+                        Text(localization.localized("password"))
                             .font(.callout)
                             .foregroundColor(Color(.secondaryLabel))
                             .accessibilityHidden(true)
@@ -84,11 +85,11 @@ struct LoginView: View {
                             
                             Group {
                                 if showPassword {
-                                    TextField("Password", text: $password)
+                                    TextField(localization.localized("password"), text: $password)
                                         .focused($focusedField, equals: .password)
                                         .textContentType(.password)
                                 } else {
-                                    SecureField("Password", text: $password)
+                                    SecureField(localization.localized("password"), text: $password)
                                         .focused($focusedField, equals: .password)
                                         .textContentType(.password)
                                 }
@@ -112,7 +113,7 @@ struct LoginView: View {
                                 Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
                                     .foregroundColor(Color(.systemGray))
                             }
-                            .accessibilityLabel(showPassword ? "Hide password" : "Show password")
+                            .accessibilityLabel(showPassword ? localization.localized("hide_password") : localization.localized("show_password"))
                         }
                         .padding()
                         .background(Color(.systemGray6))
@@ -135,7 +136,7 @@ struct LoginView: View {
                                     .padding(.trailing, 5)
                             }
                             
-                            Text(isLoggingIn ? "Logging in..." : "Login")
+                            Text(isLoggingIn ? localization.localized("logging_in") : localization.localized("login"))
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
@@ -147,7 +148,7 @@ struct LoginView: View {
                     }
                     .disabled(username.isEmpty || password.isEmpty || isLoggingIn)
                     .opacity((username.isEmpty || password.isEmpty || isLoggingIn) ? 0.6 : 1)
-                    .accessibilityLabel("Login")
+                    .accessibilityLabel(localization.localized("login"))
                     .accessibilityHint("Double tap to log into your account")
                     
                     Spacer()
@@ -174,7 +175,7 @@ struct LoginView: View {
             .navigationBarHidden(true)
             .toolbar {
                 ToolbarItem(placement: .keyboard) {
-                    Button("Done") {
+                    Button(localization.localized("done")) {
                         focusedField = nil
                     }
                 }
