@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var authentication: UserAuthentication
+    @StateObject var authentication = UserAuthentication()
     @Environment(\.sizeCategory) var sizeCategory
-    @ObservedObject private var localization = LocalizationManager.shared
+    @StateObject private var localization = LocalizationManager.shared
     
     var body: some View {
         TabView {
@@ -61,8 +61,7 @@ struct ContentView: View {
                 }
                 .accessibilityLabel("\(localization.localized("profile")) Tab")
         }
-        .accentColor(Color(.systemBlue))
-    }
+        .tint(Color(.systemBlue))
     }
 }
 
@@ -196,14 +195,14 @@ struct ProfileInfoRow: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            ContentView(authentication: UserAuthentication())
+            ContentView()
                 .previewDisplayName("Default")
             
-            ContentView(authentication: UserAuthentication())
+            ContentView()
                 .environment(\.colorScheme, .dark)
                 .previewDisplayName("Dark Mode")
             
-            ContentView(authentication: UserAuthentication())
+            ContentView()
                 .environment(\.sizeCategory, .accessibilityLarge)
                 .previewDisplayName("Large Text")
         }
