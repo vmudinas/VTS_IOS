@@ -2,7 +2,7 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-struct MapView: View {
+public struct MapView: View {
     @ObservedObject var authentication: UserAuthentication
     @StateObject private var propertyService = PropertyService()
     @State private var region = MKCoordinateRegion(

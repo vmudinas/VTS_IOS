@@ -1,7 +1,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct FinancialReportView: View {
+public struct FinancialReportView: View {
     @ObservedObject var paymentService = PaymentService()
     @State private var selectedTimeFrame: TimeFrame = .month
     @State private var isShowingExportOptions = false

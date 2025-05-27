@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-struct IssuesView: View {
+public struct IssuesView: View {
     @ObservedObject var issueService = IssueService()
     @State private var showingCreateIssue = false
     @Environment(\.sizeCategory) var sizeCategory

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DocumentsView: View {
+public struct DocumentsView: View {
     @ObservedObject var documentService = DocumentService()
     @State private var showingDocumentUploadForm = false
     @State private var showingDocumentPickerSheet = false
