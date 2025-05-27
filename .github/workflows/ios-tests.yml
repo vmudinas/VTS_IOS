@@ -72,24 +72,75 @@ jobs:
       - name: Prepare Test Results Directory
         run: |
           mkdir -p ./test-results
+          echo "Current directory: $(pwd)"
+          echo "List of files in current directory:"
+          ls -la
+          
           # Copy coverage report
-          cp coverage.json ./test-results/ || echo "No coverage.json file found"
+          if [ -f coverage.json ]; then
+            cp coverage.json ./test-results/
+            echo "Coverage report copied successfully"
+          else
+            echo "No coverage.json file found"
+            # Create an empty coverage report
+            echo "{}" > ./test-results/coverage.json
+            echo "Created empty coverage.json file"
+          fi
+          
           # Copy build output
-          cp build_output.log ./test-results/ || echo "No build_output.log file found"
+          if [ -f build_output.log ]; then
+            cp build_output.log ./test-results/
+            echo "Build output log copied successfully"
+          else
+            echo "No build_output.log file found"
+            # Create an empty log file
+            echo "Build log not available" > ./test-results/build_output.log
+            echo "Created empty build_output.log file"
+          fi
+          
           # Copy xcresult files (if they exist)
           xcresult_path=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" | head -n 1)
           if [ -n "$xcresult_path" ]; then
-            cp -R "$xcresult_path" ./test-results/ || echo "Failed to copy xcresult file"
+            echo "Found xcresult at: $xcresult_path"
+            mkdir -p ./test-results/xcresult
+            cp -R "$xcresult_path" ./test-results/xcresult/ || echo "Failed to copy xcresult file"
+          else
+            echo "No .xcresult files found in ~/Library/Developer/Xcode/DerivedData"
+            echo "Checking current directory for xcresult files"
+            find . -name "*.xcresult" -type d
           fi
+          
           # Copy any other log files
           find . -name "*.log" -not -path "./test-results/*" -exec cp {} ./test-results/ \; || echo "No additional log files found"
+          
           # List files in the directory to verify
           echo "Files prepared for upload:"
+          ls -la ./test-results/
+          echo "Content of test-results directory:"
+          find ./test-results -type f | xargs ls -la || echo "Failed to list files"
+      
+      - name: Verify Test Results Directory
+        run: |
+          if [ ! -d "./test-results" ]; then
+            echo "test-results directory does not exist, creating it"
+            mkdir -p ./test-results
+            echo "Created test-results directory"
+          fi
+          
+          # Ensure there's at least one file in the directory
+          if [ -z "$(ls -A ./test-results 2>/dev/null)" ]; then
+            echo "test-results directory is empty, creating a summary file"
+            echo "Build and test summary" > ./test-results/summary.txt
+            echo "Run at: $(date)" >> ./test-results/summary.txt
+            echo "Created summary.txt file"
+          fi
+          
+          echo "Files in test-results directory:"
           ls -la ./test-results/
       
       - name: Upload Test Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: test-results
           path: ./test-results
