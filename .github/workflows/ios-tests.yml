@@ -69,13 +69,28 @@ jobs:
             touch coverage.json  # Create empty file so upload doesn't fail
           fi
       
+      - name: Prepare Test Results Directory
+        run: |
+          mkdir -p ./test-results
+          # Copy coverage report
+          cp coverage.json ./test-results/ || echo "No coverage.json file found"
+          # Copy build output
+          cp build_output.log ./test-results/ || echo "No build_output.log file found"
+          # Copy xcresult files (if they exist)
+          xcresult_path=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" | head -n 1)
+          if [ -n "$xcresult_path" ]; then
+            cp -R "$xcresult_path" ./test-results/ || echo "Failed to copy xcresult file"
+          fi
+          # Copy any other log files
+          find . -name "*.log" -not -path "./test-results/*" -exec cp {} ./test-results/ \; || echo "No additional log files found"
+          # List files in the directory to verify
+          echo "Files prepared for upload:"
+          ls -la ./test-results/
+      
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: |
-            ~/Library/Developer/Xcode/DerivedData/**/*.xcresult
-            coverage.json
-            build_output.log
-            **/*.log
+          path: ./test-results
+          if-no-files-found: warn
