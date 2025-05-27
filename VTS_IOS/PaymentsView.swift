@@ -52,6 +52,7 @@ struct PaymentsView: View {
 
 struct PaymentRowView: View {
     let payment: Payment
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
@@ -61,23 +62,23 @@ struct PaymentRowView: View {
                 
                 Spacer()
                 
-                Text("$\(String(format: "%.2f", payment.amount))")
+                Text(localization.formatCurrency(payment.amount))
                     .font(.headline)
                     .foregroundColor(.blue)
             }
             
-            Text("Due: \(formattedDate(payment.dueDate))")
+            Text("Due: \(localization.formatDate(payment.dueDate))")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
             HStack {
                 if payment.isPaid {
-                    Text("PAID")
+                    Text(localization.localized("paid"))
                         .font(.caption)
                         .bold()
                         .foregroundColor(.green)
                 } else {
-                    Text("PENDING")
+                    Text(localization.localized("pending"))
                         .font(.caption)
                         .bold()
                         .foregroundColor(.orange)
@@ -109,6 +110,7 @@ struct PaymentRowView: View {
 
 struct PaymentHistoryRowView: View {
     let payment: Payment
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
@@ -118,17 +120,17 @@ struct PaymentHistoryRowView: View {
                 
                 Spacer()
                 
-                Text("$\(String(format: "%.2f", payment.amount))")
+                Text(localization.formatCurrency(payment.amount))
                     .font(.headline)
                     .foregroundColor(.blue)
             }
             
-            Text("Paid: \(formattedDate(payment.dueDate))")
+            Text("\(localization.localized("paid")): \(localization.formatDate(payment.dueDate))")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
             HStack {
-                Text("PAID")
+                Text(localization.localized("paid"))
                     .font(.caption)
                     .bold()
                     .foregroundColor(.green)
@@ -136,7 +138,7 @@ struct PaymentHistoryRowView: View {
                 if let method = payment.paymentMethod {
                     Spacer()
                     
-                    Text("via \(method.rawValue)")
+                    Text("\(localization.localized("via")) \(method.rawValue)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -144,9 +146,10 @@ struct PaymentHistoryRowView: View {
                 if payment.hasRefund, let refundAmount = payment.refundAmount {
                     Spacer()
                     
-                    Text("Refunded: $\(String(format: "%.2f", refundAmount))")
+                    Text("\(localization.localized("refunded")): \(localization.formatCurrency(refundAmount))")
                         .font(.caption)
                         .foregroundColor(.red)
+                }
                 }
             }
             .padding(.top, 2)
@@ -186,6 +189,7 @@ struct PaymentDetailView: View {
     @ObservedObject var paymentService: PaymentService
     let payment: Payment
     @Binding var isPresented: Bool
+    @ObservedObject private var localization = LocalizationManager.shared
     
     @State private var selectedPaymentMethod: PaymentMethod = .stripe
     @State private var isRecurring: Bool = false
@@ -208,22 +212,22 @@ struct PaymentDetailView: View {
                     }
                     
                     HStack {
-                        Text("Amount")
+                        Text(localization.localized("amount"))
                         Spacer()
-                        Text("$\(String(format: "%.2f", payment.amount))")
+                        Text(localization.formatCurrency(payment.amount))
                             .foregroundColor(.secondary)
                     }
                     
                     HStack {
-                        Text("Due Date")
+                        Text(localization.localized("due_date"))
                         Spacer()
-                        Text(formattedDate(payment.dueDate))
+                        Text(localization.formatDate(payment.dueDate))
                             .foregroundColor(.secondary)
                     }
                     
                     if payment.isRecurring {
                         HStack {
-                            Text("Recurring")
+                            Text(localization.localized("recurring"))
                             Spacer()
                             Text(payment.paymentFrequency.rawValue)
                                 .foregroundColor(.secondary)

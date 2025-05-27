@@ -7,6 +7,8 @@ struct MessagesView: View {
     @State private var searchText: String = ""
     @State private var isShowingPersonPicker = false
     @State private var recipient: String = ""
+    @State private var showingOfflineBanner = false
+    @StateObject private var localization = LocalizationManager.shared
     
     // Mock current user ID - in a real app this would come from authentication
     let currentUserId = "tenant123"
@@ -23,6 +25,33 @@ struct MessagesView: View {
     var body: some View {
         NavigationView {
             VStack {
+                // Offline mode banner
+                if messageService.isOfflineMode {
+                    HStack {
+                        Image(systemName: "wifi.slash")
+                            .foregroundColor(.white)
+                        Text(localization.localized("offline"))
+                            .foregroundColor(.white)
+                        Spacer()
+                        Button(action: {
+                            // Attempt to sync
+                            PersistenceManager.shared.syncWhenOnline { success in
+                                if success {
+                                    messageService.checkConnectivity()
+                                }
+                            }
+                        }) {
+                            Text(localization.localized("sync"))
+                                .foregroundColor(.white)
+                                .underline()
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                    .background(Color.orange)
+                    .transition(.move(edge: .top))
+                }
+                
                 if selectedConversation == nil {
                     // Conversations list view
                     VStack {
@@ -47,7 +76,7 @@ struct MessagesView: View {
                         Button(action: {
                             isShowingPersonPicker = true
                         }) {
-                            Label("New Message", systemImage: "square.and.pencil")
+                            Label(localization.localized("new_message"), systemImage: "square.and.pencil")
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .padding()
@@ -191,6 +220,7 @@ struct ConversationView: View {
     var messageService: MessageService
     @Binding var composedMessage: String
     var onBack: () -> Void
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var conversation: [Message] {
         return messageService.getConversation(between: currentUserId, and: partnerId)
@@ -203,7 +233,7 @@ struct ConversationView: View {
                 Button(action: onBack) {
                     HStack {
                         Image(systemName: "chevron.left")
-                        Text("Back")
+                        Text(localization.localized("back"))
                     }
                 }
                 
@@ -223,7 +253,8 @@ struct ConversationView: View {
                         ForEach(conversation) { message in
                             MessageBubble(
                                 message: message,
-                                isCurrentUser: message.sender == currentUserId
+                                isCurrentUser: message.sender == currentUserId,
+                                isPending: messageService.pendingMessages.contains(where: { $0.id == message.id })
                             )
                             .id(message.id)
                             .onAppear {
@@ -244,23 +275,32 @@ struct ConversationView: View {
             
             // Message composer
             HStack {
-                TextField("Message", text: $composedMessage)
+                TextField(localization.localized("message_placeholder"), text: $composedMessage)
                     .padding(10)
                     .background(Color(.systemGray6))
                     .cornerRadius(20)
                 
                 Button(action: {
                     if !composedMessage.isEmpty {
-                        messageService.sendMessage(
-                            sender: currentUserId,
-                            recipient: partnerId,
-                            content: composedMessage
-                        )
+                        if messageService.isOfflineMode {
+                            // Show a subtle indicator that message will be sent when online
+                            messageService.sendMessage(
+                                sender: currentUserId,
+                                recipient: partnerId,
+                                content: composedMessage
+                            )
+                        } else {
+                            messageService.sendMessage(
+                                sender: currentUserId,
+                                recipient: partnerId,
+                                content: composedMessage
+                            )
+                        }
                         composedMessage = ""
                     }
                 }) {
                     Image(systemName: "paperplane.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(messageService.isOfflineMode ? .orange : .blue)
                         .padding(10)
                 }
             }
@@ -272,6 +312,14 @@ struct ConversationView: View {
 struct MessageBubble: View {
     let message: Message
     let isCurrentUser: Bool
+    var isPending: Bool
+    @ObservedObject private var localization = LocalizationManager.shared
+    
+    init(message: Message, isCurrentUser: Bool, isPending: Bool = false) {
+        self.message = message
+        self.isCurrentUser = isCurrentUser
+        self.isPending = isPending
+    }
     
     var body: some View {
         HStack {
@@ -283,12 +331,24 @@ struct MessageBubble: View {
                 Text(message.content)
                     .padding(10)
                     .foregroundColor(isCurrentUser ? .white : .primary)
-                    .background(isCurrentUser ? Color.blue : Color(.systemGray5))
+                    .background(isCurrentUser ? (isPending ? Color.orange : Color.blue) : Color(.systemGray5))
                     .cornerRadius(16)
                 
-                Text(formatTime(message.timestamp))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Text(formatTime(message.timestamp))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    if isPending {
+                        Image(systemName: "clock")
+                            .font(.caption2)
+                            .foregroundColor(.orange)
+                    } else if isCurrentUser {
+                        Image(systemName: message.isRead ? "checkmark.circle.fill" : "checkmark.circle")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
             
             if !isCurrentUser {
@@ -301,6 +361,7 @@ struct MessageBubble: View {
     private func formatTime(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
+        formatter.locale = localization.currentLocale
         return formatter.string(from: date)
     }
 }
