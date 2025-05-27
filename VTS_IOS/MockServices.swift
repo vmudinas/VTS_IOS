@@ -860,3 +860,151 @@ class MessageService: ObservableObject {
             .sorted { $0.1.timestamp > $1.1.timestamp }
     }
 }
+
+// Mock service for handling properties
+class PropertyService: ObservableObject {
+    @Published var properties: [Property] = []
+    private let historyService = HistoryService()
+    
+    init() {
+        // Load sample data
+        loadSampleProperties()
+    }
+    
+    func loadSampleProperties() {
+        properties = [
+            Property(
+                name: "Lakeside Apartment",
+                address: "123 Lake View Dr, Seattle, WA 98101",
+                description: "Modern 2-bedroom apartment with lake view",
+                latitude: 47.6062,
+                longitude: -122.3321,
+                createdBy: "admin",
+                tenantEmail: "tenant@example.com"
+            ),
+            Property(
+                name: "Downtown Condo",
+                address: "456 Main St, Seattle, WA 98104",
+                description: "Luxury 1-bedroom condo in downtown",
+                latitude: 47.6097,
+                longitude: -122.3331,
+                createdBy: "admin",
+                tenantPhone: "555-123-4567"
+            ),
+            Property(
+                name: "Green Hills House",
+                address: "789 Forest Ave, Bellevue, WA 98004",
+                description: "Spacious 3-bedroom family house",
+                latitude: 47.6101,
+                longitude: -122.2015,
+                createdBy: "admin"
+            )
+        ]
+    }
+    
+    // Add a new property
+    func addProperty(name: String, address: String, description: String, latitude: Double, longitude: Double, createdBy: String, tenantEmail: String? = nil, tenantPhone: String? = nil) {
+        let newProperty = Property(
+            name: name,
+            address: address,
+            description: description,
+            latitude: latitude,
+            longitude: longitude,
+            createdBy: createdBy,
+            tenantEmail: tenantEmail,
+            tenantPhone: tenantPhone
+        )
+        
+        properties.append(newProperty)
+        
+        // Add to history
+        historyService.addHistoryItem(item: HistoryItem(
+            activityType: .property,
+            description: "Added new property: '\(name)' at \(address)",
+            relatedItemId: newProperty.id
+        ))
+    }
+    
+    // Update an existing property
+    func updateProperty(property: Property, name: String? = nil, address: String? = nil, description: String? = nil, tenantEmail: String? = nil, tenantPhone: String? = nil) {
+        if let index = properties.firstIndex(where: { $0.id == property.id }) {
+            var updatedProperty = property
+            
+            if let name = name {
+                updatedProperty = Property(
+                    id: property.id,
+                    name: name,
+                    address: address ?? property.address,
+                    description: description ?? property.description,
+                    latitude: property.latitude,
+                    longitude: property.longitude,
+                    createdBy: property.createdBy,
+                    tenantEmail: tenantEmail ?? property.tenantEmail,
+                    tenantPhone: tenantPhone ?? property.tenantPhone
+                )
+            }
+            
+            properties[index] = updatedProperty
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .property,
+                description: "Updated property: '\(property.name)'",
+                relatedItemId: property.id
+            ))
+        }
+    }
+    
+    // Invite a tenant for a property
+    func inviteTenant(property: Property, email: String? = nil, phone: String? = nil, completion: @escaping (Bool) -> Void) {
+        if let index = properties.firstIndex(where: { $0.id == property.id }) {
+            var updatedProperty = property
+            updatedProperty.tenantEmail = email ?? property.tenantEmail
+            updatedProperty.tenantPhone = phone ?? property.tenantPhone
+            properties[index] = updatedProperty
+            
+            // In a real app, this would send an email or SMS
+            // For now we just simulate it
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .property,
+                description: "Invited tenant to property '\(property.name)' via \(email != nil ? "email" : "phone")",
+                relatedItemId: property.id
+            ))
+            
+            // Simulate network delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                completion(true)
+            }
+        } else {
+            completion(false)
+        }
+    }
+    
+    // Delete a property
+    func deleteProperty(property: Property) {
+        if let index = properties.firstIndex(where: { $0.id == property.id }) {
+            properties.remove(at: index)
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .property,
+                description: "Removed property: '\(property.name)'",
+                relatedItemId: property.id
+            ))
+        }
+    }
+    
+    // Get properties for a specific user
+    func getPropertiesForUser(userId: String, isAdmin: Bool) -> [Property] {
+        if isAdmin {
+            // Admins see all properties they've created
+            return properties.filter { $0.createdBy == userId }
+        } else {
+            // Regular users only see properties where they're the tenant
+            // In a real app, this would be based on tenant ID rather than email/phone
+            return []
+        }
+    }
+}

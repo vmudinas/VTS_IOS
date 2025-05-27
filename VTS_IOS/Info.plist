@@ -60,5 +60,9 @@
 	</array>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>We need notifications permission to send you payment reminders.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to show nearby properties on the map.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to show nearby properties on the map.</string>
 </dict>
 </plist>
