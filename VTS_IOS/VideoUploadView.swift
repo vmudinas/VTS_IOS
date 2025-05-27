@@ -6,6 +6,7 @@ struct VideoUploadView: View {
     @State private var showingVideoPickerSheet = false
     @State private var showingVideoUploadForm = false
     @State private var selectedVideoURL: URL? = nil
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         NavigationView {
@@ -24,7 +25,7 @@ struct VideoUploadView: View {
                 }
                 
                 List {
-                    Section(header: Text("Upload New Video")) {
+                    Section(header: Text(localization.localized("upload_new_video"))) {
                         Button(action: {
                             showingVideoPickerSheet = true
                         }) {
@@ -44,7 +45,7 @@ struct VideoUploadView: View {
                 }
                 .listStyle(InsetGroupedListStyle())
             }
-            .navigationBarTitle("Video Upload", displayMode: .inline)
+            .navigationBarTitle(localization.localized("video_upload"), displayMode: .inline)
             .actionSheet(isPresented: $showingVideoPickerSheet) {
                 ActionSheet(
                     title: Text("Select Video Source"),
@@ -181,7 +182,7 @@ struct VideoUploadFormView: View {
                     .frame(height: 120)
                 }
             }
-            .navigationBarTitle("Upload Video", displayMode: .inline)
+            .navigationBarTitle(localization.localized("upload_video"), displayMode: .inline)
             .navigationBarItems(
                 leading: Button("Cancel") {
                     isPresented = false

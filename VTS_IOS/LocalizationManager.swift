@@ -131,7 +131,10 @@ class LocalizationManager: ObservableObject {
                 "done": "Done",
                 "message_placeholder": "Type a message...",
                 "document_details": "Document Details",
-                "upload_document": "Upload Document"
+                "upload_document": "Upload Document",
+                "upload_new_video": "Upload New Video",
+                "video_upload": "Video Upload",
+                "upload_video": "Upload Video"
             ],
             "es": [
                 "payment": "Pago",
@@ -179,7 +182,10 @@ class LocalizationManager: ObservableObject {
                 "done": "Hecho",
                 "message_placeholder": "Escribe un mensaje...",
                 "document_details": "Detalles del documento",
-                "upload_document": "Subir documento"
+                "upload_document": "Subir documento",
+                "upload_new_video": "Subir nuevo video",
+                "video_upload": "Subida de video",
+                "upload_video": "Subir video"
             ],
             "fr": [
                 "payment": "Paiement",
@@ -227,7 +233,10 @@ class LocalizationManager: ObservableObject {
                 "done": "Terminé",
                 "message_placeholder": "Écrivez un message...",
                 "document_details": "Détails du document",
-                "upload_document": "Télécharger un document"
+                "upload_document": "Télécharger un document",
+                "upload_new_video": "Télécharger une nouvelle vidéo",
+                "video_upload": "Téléchargement de vidéo",
+                "upload_video": "Télécharger une vidéo"
             ],
             "de": [
                 "payment": "Zahlung",
@@ -275,7 +284,10 @@ class LocalizationManager: ObservableObject {
                 "done": "Fertig",
                 "message_placeholder": "Nachricht eingeben...",
                 "document_details": "Dokumentdetails",
-                "upload_document": "Dokument hochladen"
+                "upload_document": "Dokument hochladen",
+                "upload_new_video": "Neues Video hochladen",
+                "video_upload": "Video-Upload",
+                "upload_video": "Video hochladen"
             ],
             "zh": [
                 "payment": "支付",
@@ -323,7 +335,10 @@ class LocalizationManager: ObservableObject {
                 "done": "完成",
                 "message_placeholder": "输入消息...",
                 "document_details": "文档详情",
-                "upload_document": "上传文档"
+                "upload_document": "上传文档",
+                "upload_new_video": "上传新视频",
+                "video_upload": "视频上传",
+                "upload_video": "上传视频"
             ]
         ]
         
