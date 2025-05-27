@@ -472,7 +472,6 @@ struct CreateIssueView: View {
         }
     }
 }
-}
 
 // Issue Detail View for viewing issue details and managing task assignments
 struct IssueDetailView: View {
