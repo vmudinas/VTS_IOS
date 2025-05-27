@@ -303,6 +303,10 @@ class IssueService: ObservableObject {
     }
     
     func loadSampleIssues() {
+        let contractorService = ContractorService()
+        contractorService.loadSampleContractors()
+        let contractors = contractorService.contractors
+        
         issues = [
             Issue(
                 title: "App crashes on startup",
@@ -327,7 +331,10 @@ class IssueService: ObservableObject {
                 priority: .high,
                 assignedTo: "maintenance1",
                 imageURLs: [URL(string: "https://example.com/faucet1.jpg")!],
-                isRecurring: false
+                isRecurring: false,
+                contractorId: contractors.first(where: { $0.specialties.contains(.plumbing) })?.id,
+                estimatedCost: 75.00,
+                propertyId: UUID()
             ),
             Issue(
                 title: "Monthly pest control",
@@ -340,13 +347,50 @@ class IssueService: ObservableObject {
                 imageURLs: [],
                 isRecurring: true,
                 recurringFrequency: .monthly,
-                nextDueDate: Date().addingTimeInterval(86400 * 20) // 20 days from now
+                nextDueDate: Date().addingTimeInterval(86400 * 20), // 20 days from now
+                contractorId: contractors.last?.id,
+                estimatedCost: 120.00,
+                propertyId: UUID()
+            ),
+            Issue(
+                title: "HVAC annual maintenance",
+                description: "Scheduled annual maintenance for the HVAC system including filter replacement and system check",
+                createdDate: Date().addingTimeInterval(-86400 * 15), // 15 days ago
+                status: .resolved,
+                createdBy: "admin",
+                priority: .medium,
+                assignedTo: nil,
+                imageURLs: [],
+                isRecurring: true,
+                recurringFrequency: .annually,
+                nextDueDate: Date().addingTimeInterval(86400 * 350), // About a year from now
+                contractorId: contractors.first(where: { $0.specialties.contains(.hvac) })?.id,
+                estimatedCost: 250.00,
+                actualCost: 275.50,
+                completionDate: Date().addingTimeInterval(-86400 * 2),
+                notes: "Technician found dust build-up in the vents. Recommended more frequent filter changes.",
+                propertyId: UUID()
+            ),
+            Issue(
+                title: "Urgent electrical repair",
+                description: "Power outage in Unit 203. Circuit breaker keeps tripping when appliances are used simultaneously.",
+                createdDate: Date().addingTimeInterval(-86400 * 1), // 1 day ago
+                status: .open,
+                createdBy: "tenant203",
+                priority: .urgent,
+                assignedTo: nil,
+                imageURLs: [],
+                isRecurring: false,
+                contractorId: contractors.first(where: { $0.specialties.contains(.electrical) })?.id,
+                estimatedCost: 150.00,
+                notes: "Tenant reported burning smell near electrical panel. Emergency service requested.",
+                propertyId: UUID()
             )
         ]
     }
     
     // In a real app, this would make an API call to the backend
-    func createIssue(title: String, description: String, priority: IssuePriority = .medium, imageURLs: [URL] = [], isRecurring: Bool = false, recurringFrequency: PaymentFrequency = .oneTime) {
+    func createIssue(title: String, description: String, priority: IssuePriority = .medium, imageURLs: [URL] = [], isRecurring: Bool = false, recurringFrequency: PaymentFrequency = .oneTime, estimatedCost: Double? = nil, propertyId: UUID? = nil) {
         let newIssue = Issue(
             title: title,
             description: description,
@@ -355,7 +399,10 @@ class IssueService: ObservableObject {
             imageURLs: imageURLs,
             isRecurring: isRecurring,
             recurringFrequency: recurringFrequency,
-            nextDueDate: isRecurring ? calculateNextDueDate(from: Date(), frequency: recurringFrequency) : nil
+            nextDueDate: isRecurring ? calculateNextDueDate(from: Date(), frequency: recurringFrequency) : nil,
+            estimatedCost: estimatedCost,
+            skipNextOccurrence: false,
+            propertyId: propertyId
         )
         issues.append(newIssue)
         
@@ -408,7 +455,8 @@ class IssueService: ObservableObject {
             if (status == .resolved || status == .closed) && 
                (oldStatus == .open || oldStatus == .inProgress) && 
                updatedIssue.isRecurring,
-               let nextDueDate = updatedIssue.nextDueDate {
+               let nextDueDate = updatedIssue.nextDueDate,
+               !updatedIssue.skipNextOccurrence {
                 
                 let nextIssue = Issue(
                     title: updatedIssue.title,
@@ -421,7 +469,11 @@ class IssueService: ObservableObject {
                     imageURLs: [],
                     isRecurring: true,
                     recurringFrequency: updatedIssue.recurringFrequency,
-                    nextDueDate: calculateNextDueDate(from: nextDueDate, frequency: updatedIssue.recurringFrequency)
+                    nextDueDate: calculateNextDueDate(from: nextDueDate, frequency: updatedIssue.recurringFrequency),
+                    contractorId: updatedIssue.contractorId,
+                    estimatedCost: updatedIssue.estimatedCost,
+                    skipNextOccurrence: false,
+                    propertyId: updatedIssue.propertyId
                 )
                 issues.append(nextIssue)
                 
@@ -451,6 +503,145 @@ class IssueService: ObservableObject {
         }
     }
     
+    // Add contractor to an issue
+    func assignContractor(issue: Issue, contractorId: UUID) {
+        if let index = issues.firstIndex(where: { $0.id == issue.id }) {
+            var updatedIssue = issue
+            updatedIssue.contractorId = contractorId
+            issues[index] = updatedIssue
+            
+            let contractorService = ContractorService()
+            if let contractor = contractorService.getContractor(by: contractorId) {
+                // Add to history
+                historyService.addHistoryItem(item: HistoryItem(
+                    activityType: .issue,
+                    description: "Contractor '\(contractor.name)' from '\(contractor.company)' assigned to maintenance request '\(issue.title)'",
+                    relatedItemId: issue.id
+                ))
+            }
+        }
+    }
+    
+    // Update cost estimates for an issue
+    func updateCosts(issue: Issue, estimatedCost: Double?, actualCost: Double?) {
+        if let index = issues.firstIndex(where: { $0.id == issue.id }) {
+            var updatedIssue = issue
+            
+            if let estimatedCost = estimatedCost {
+                updatedIssue.estimatedCost = estimatedCost
+            }
+            
+            if let actualCost = actualCost {
+                updatedIssue.actualCost = actualCost
+            }
+            
+            issues[index] = updatedIssue
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .issue,
+                description: "Updated cost information for maintenance request '\(issue.title)'",
+                relatedItemId: issue.id
+            ))
+        }
+    }
+    
+    // Skip next occurrence of a recurring issue
+    func skipNextOccurrence(issue: Issue) {
+        if let index = issues.firstIndex(where: { $0.id == issue.id }), issue.isRecurring {
+            var updatedIssue = issue
+            updatedIssue.skipNextOccurrence = true
+            
+            if let nextDueDate = updatedIssue.nextDueDate, let newNextDueDate = calculateNextDueDate(from: nextDueDate, frequency: updatedIssue.recurringFrequency) {
+                updatedIssue.nextDueDate = newNextDueDate
+            }
+            
+            issues[index] = updatedIssue
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .issue,
+                description: "Skipped next occurrence of recurring maintenance request '\(issue.title)'",
+                relatedItemId: issue.id
+            ))
+        }
+    }
+    
+    // Add notes to an issue
+    func addNotes(issue: Issue, notes: String) {
+        if let index = issues.firstIndex(where: { $0.id == issue.id }) {
+            var updatedIssue = issue
+            
+            if let existingNotes = updatedIssue.notes {
+                updatedIssue.notes = existingNotes + "\n\n" + notes
+            } else {
+                updatedIssue.notes = notes
+            }
+            
+            issues[index] = updatedIssue
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .issue,
+                description: "Notes added to maintenance request '\(issue.title)'",
+                relatedItemId: issue.id
+            ))
+        }
+    }
+    
+    // Complete an issue with actual costs and completion date
+    func completeIssue(issue: Issue, actualCost: Double?, completionDate: Date = Date()) {
+        if let index = issues.firstIndex(where: { $0.id == issue.id }) {
+            var updatedIssue = issue
+            updatedIssue.actualCost = actualCost
+            updatedIssue.completionDate = completionDate
+            updatedIssue.status = .resolved
+            issues[index] = updatedIssue
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .issue,
+                description: "Maintenance request '\(issue.title)' completed on \(formattedDate(completionDate))" + (actualCost != nil ? " with actual cost of $\(String(format: "%.2f", actualCost!))" : ""),
+                relatedItemId: issue.id
+            ))
+            
+            // If this is a recurring issue, create the next occurrence
+            if updatedIssue.isRecurring, let nextDueDate = updatedIssue.nextDueDate, !updatedIssue.skipNextOccurrence {
+                createNextRecurringIssue(from: updatedIssue, nextDueDate: nextDueDate)
+            }
+        }
+    }
+    
+    // Create next occurrence of a recurring issue
+    private func createNextRecurringIssue(from issue: Issue, nextDueDate: Date) {
+        let nextIssue = Issue(
+            title: issue.title,
+            description: issue.description,
+            createdDate: nextDueDate,
+            status: .open,
+            createdBy: issue.createdBy,
+            priority: issue.priority,
+            assignedTo: issue.assignedTo,
+            imageURLs: [],
+            isRecurring: true,
+            recurringFrequency: issue.recurringFrequency,
+            nextDueDate: calculateNextDueDate(from: nextDueDate, frequency: issue.recurringFrequency),
+            contractorId: issue.contractorId,
+            estimatedCost: issue.estimatedCost,
+            skipNextOccurrence: false,
+            propertyId: issue.propertyId
+        )
+        
+        issues.append(nextIssue)
+        
+        // Add to history
+        historyService.addHistoryItem(item: HistoryItem(
+            activityType: .issue,
+            description: "Next occurrence of recurring maintenance request '\(issue.title)' scheduled for \(formattedDate(nextDueDate))",
+            relatedItemId: nextIssue.id
+        ))
+    }
+    
     // Calculate next due date based on frequency (reusing logic from PaymentService)
     private func calculateNextDueDate(from date: Date, frequency: PaymentFrequency) -> Date? {
         let calendar = Calendar.current
@@ -477,6 +668,110 @@ class IssueService: ObservableObject {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter.string(from: date)
+    }
+}
+
+// Mock service for managing contractors
+class ContractorService: ObservableObject {
+    @Published var contractors: [Contractor] = []
+    @Published var availableContractors: [Contractor] = []
+    @Published var bookedContractors: [UUID: [DateInterval]] = [:]
+    let historyService = HistoryService()
+    
+    init() {
+        // Load sample data
+        loadSampleContractors()
+    }
+    
+    func loadSampleContractors() {
+        contractors = [
+            Contractor(
+                name: "John Smith",
+                company: "Smith Plumbing Services",
+                specialties: [.plumbing, .general],
+                email: "john@smithplumbing.com",
+                phone: "555-123-4567",
+                hourlyRate: 75.00,
+                isPreferred: true,
+                rating: 5
+            ),
+            Contractor(
+                name: "Lisa Johnson",
+                company: "Johnson Electrical",
+                specialties: [.electrical],
+                email: "lisa@johnsonelectric.com",
+                phone: "555-987-6543",
+                hourlyRate: 85.00,
+                isPreferred: true,
+                rating: 5
+            ),
+            Contractor(
+                name: "Carlos Rodriguez",
+                company: "Rodriguez HVAC",
+                specialties: [.hvac],
+                email: "carlos@rodriguezhvac.com",
+                phone: "555-456-7890",
+                hourlyRate: 80.00,
+                isPreferred: false,
+                rating: 4
+            ),
+            Contractor(
+                name: "Sarah Williams",
+                company: "Williams Property Maintenance",
+                specialties: [.general, .carpentry, .painting],
+                email: "sarah@williamspm.com",
+                phone: "555-789-0123",
+                hourlyRate: 65.00,
+                isPreferred: false,
+                rating: 4
+            ),
+            Contractor(
+                name: "Michael Lee",
+                company: "Lee Landscaping",
+                specialties: [.landscaping],
+                email: "michael@leelandscaping.com",
+                phone: "555-234-5678",
+                hourlyRate: 60.00,
+                isPreferred: false,
+                rating: 3
+            )
+        ]
+    }
+    
+    // Find contractors based on specialty
+    func findContractors(specialty: ContractorSpecialty? = nil, preferredOnly: Bool = false) -> [Contractor] {
+        var filtered = contractors
+        
+        if let specialty = specialty {
+            filtered = filtered.filter { $0.specialties.contains(specialty) }
+        }
+        
+        if preferredOnly {
+            filtered = filtered.filter { $0.isPreferred }
+        }
+        
+        return filtered.sorted { ($0.rating ?? 0) > ($1.rating ?? 0) }
+    }
+    
+    // Assign a contractor to an issue
+    func assignContractor(contractor: Contractor, to issue: Issue, issueService: IssueService) {
+        if let index = issueService.issues.firstIndex(where: { $0.id == issue.id }) {
+            var updatedIssue = issue
+            updatedIssue.contractorId = contractor.id
+            issueService.issues[index] = updatedIssue
+            
+            // Add to history
+            historyService.addHistoryItem(item: HistoryItem(
+                activityType: .issue,
+                description: "Contractor '\(contractor.name)' from '\(contractor.company)' assigned to maintenance request '\(issue.title)'",
+                relatedItemId: issue.id
+            ))
+        }
+    }
+    
+    // Get contractor details by ID
+    func getContractor(by id: UUID) -> Contractor? {
+        return contractors.first { $0.id == id }
     }
 }
 
