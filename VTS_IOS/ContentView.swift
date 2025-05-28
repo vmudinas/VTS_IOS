@@ -6,19 +6,12 @@ import Combine
 import MapKit
 import CoreLocation
 
-// Import managers
-import UserAuthentication
-import LocalizationManager
+// No need to import files in the same module/target
+// Removed: import UserAuthentication
+// Removed: import LocalizationManager
 
-// Import views
-import PaymentsView
-import FinancialReportView
-import IssuesView
-import DocumentsView
-import MessagesView
-import VideoUploadView
-import HistoryView
-import MapView
+// Views in same module/target don't need imports
+// Removed view imports as they are in the same module
 
 struct ContentView: View {
     @StateObject var authentication = UserAuthentication()
