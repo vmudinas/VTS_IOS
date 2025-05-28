@@ -12,8 +12,10 @@
 		13F8B8A32A1B2D4D00D9C485 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F8B8A22A1B2D4D00D9C485 /* ContentView.swift */; };
 		13F8B8A82A1B2D4E00D9C485 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13F8B8A72A1B2D4E00D9C485 /* Assets.xcassets */; };
 		13F8B8AB2A1B2D4E00D9C485 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13F8B8A92A1B2D4E00D9C485 /* LaunchScreen.storyboard */; };
+		C0D4D0002A1C2D4D00D9C485 /* ContractorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1002A1C2D4D00D9C485 /* ContractorService.swift */; };
 		C0D4D0012A1C2D4D00D9C485 /* DocumentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1012A1C2D4D00D9C485 /* DocumentsView.swift */; };
 		C0D4D0022A1C2D4D00D9C485 /* FinancialReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1022A1C2D4D00D9C485 /* FinancialReportView.swift */; };
+		C0D4D0032A1C2D4D00D9C485 /* HistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1032A1C2D4D00D9C485 /* HistoryService.swift */; };
 		C0D4D0042A1C2D4D00D9C485 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1042A1C2D4D00D9C485 /* HistoryView.swift */; };
 		C0D4D0052A1C2D4D00D9C485 /* IssuesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1052A1C2D4D00D9C485 /* IssuesView.swift */; };
 		C0D4D0062A1C2D4D00D9C485 /* LocalizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1062A1C2D4D00D9C485 /* LocalizationManager.swift */; };
@@ -22,8 +24,10 @@
 		C0D4D00A2A1C2D4D00D9C485 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D10A2A1C2D4D00D9C485 /* MapView.swift */; };
 		C0D4D00B2A1C2D4D00D9C485 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D10B2A1C2D4D00D9C485 /* MessagesView.swift */; };
 		C0D4D00C2A1C2D4D00D9C485 /* MockServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D10C2A1C2D4D00D9C485 /* MockServices.swift */; };
+		C0D4D00D2A1C2D4D00D9C485 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D10D2A1C2D4D00D9C485 /* Models.swift */; };
 		C0D4D00E2A1C2D4D00D9C485 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D10E2A1C2D4D00D9C485 /* NotificationManager.swift */; };
 		C0D4D00F2A1C2D4D00D9C485 /* PaymentGatewayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D10F2A1C2D4D00D9C485 /* PaymentGatewayService.swift */; };
+		C0D4D0102A1C2D4D00D9C485 /* PaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1102A1C2D4D00D9C485 /* PaymentService.swift */; };
 		C0D4D0112A1C2D4D00D9C485 /* PaymentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1112A1C2D4D00D9C485 /* PaymentsView.swift */; };
 		C0D4D0122A1C2D4D00D9C485 /* PersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1122A1C2D4D00D9C485 /* PersistenceManager.swift */; };
 		C0D4D0132A1C2D4D00D9C485 /* UserAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1132A1C2D4D00D9C485 /* UserAuthentication.swift */; };
@@ -46,8 +50,10 @@
 		13F8B8A72A1B2D4E00D9C485 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		13F8B8AA2A1B2D4E00D9C485 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		13F8B8AC2A1B2D4E00D9C485 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C0D4D1002A1C2D4D00D9C485 /* ContractorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractorService.swift; sourceTree = "<group>"; };
 		C0D4D1012A1C2D4D00D9C485 /* DocumentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsView.swift; sourceTree = "<group>"; };
 		C0D4D1022A1C2D4D00D9C485 /* FinancialReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinancialReportView.swift; sourceTree = "<group>"; };
+		C0D4D1032A1C2D4D00D9C485 /* HistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryService.swift; sourceTree = "<group>"; };
 		C0D4D1042A1C2D4D00D9C485 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		C0D4D1052A1C2D4D00D9C485 /* IssuesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IssuesView.swift; sourceTree = "<group>"; };
 		C0D4D1062A1C2D4D00D9C485 /* LocalizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationManager.swift; sourceTree = "<group>"; };
@@ -57,8 +63,10 @@
 		C0D4D10A2A1C2D4D00D9C485 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		C0D4D10B2A1C2D4D00D9C485 /* MessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		C0D4D10C2A1C2D4D00D9C485 /* MockServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServices.swift; sourceTree = "<group>"; };
+		C0D4D10D2A1C2D4D00D9C485 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		C0D4D10E2A1C2D4D00D9C485 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		C0D4D10F2A1C2D4D00D9C485 /* PaymentGatewayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentGatewayService.swift; sourceTree = "<group>"; };
+		C0D4D1102A1C2D4D00D9C485 /* PaymentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentService.swift; sourceTree = "<group>"; };
 		C0D4D1112A1C2D4D00D9C485 /* PaymentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsView.swift; sourceTree = "<group>"; };
 		C0D4D1122A1C2D4D00D9C485 /* PersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceManager.swift; sourceTree = "<group>"; };
 		C0D4D1132A1C2D4D00D9C485 /* UserAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAuthentication.swift; sourceTree = "<group>"; };
@@ -119,9 +127,13 @@
 				C0D4D1082A1C2D4D00D9C485 /* LoginView.swift */,
 				C0D4D1092A1C2D4D00D9C485 /* MainView.swift */,
 				C0D4D10C2A1C2D4D00D9C485 /* MockServices.swift */,
+				C0D4D10D2A1C2D4D00D9C485 /* Models.swift */,
 				C0D4D10E2A1C2D4D00D9C485 /* NotificationManager.swift */,
 				C0D4D10F2A1C2D4D00D9C485 /* PaymentGatewayService.swift */,
+				C0D4D1102A1C2D4D00D9C485 /* PaymentService.swift */,
 				C0D4D1122A1C2D4D00D9C485 /* PersistenceManager.swift */,
+				C0D4D1002A1C2D4D00D9C485 /* ContractorService.swift */,
+				C0D4D1032A1C2D4D00D9C485 /* HistoryService.swift */,
 				C0D4D1152A1C2D4D00D9C485 /* Contractor.swift */,
 				C0D4D1162A1C2D4D00D9C485 /* Document.swift */,
 				C0D4D1172A1C2D4D00D9C485 /* HistoryItem.swift */,
@@ -210,8 +222,10 @@
 				13F8B89F2A1B2D4D00D9C485 /* AppDelegate.swift in Sources */,
 				13F8B8A12A1B2D4D00D9C485 /* SceneDelegate.swift in Sources */,
 				13F8B8A32A1B2D4D00D9C485 /* ContentView.swift in Sources */,
+				C0D4D0002A1C2D4D00D9C485 /* ContractorService.swift in Sources */,
 				C0D4D0012A1C2D4D00D9C485 /* DocumentsView.swift in Sources */,
 				C0D4D0022A1C2D4D00D9C485 /* FinancialReportView.swift in Sources */,
+				C0D4D0032A1C2D4D00D9C485 /* HistoryService.swift in Sources */,
 				C0D4D0042A1C2D4D00D9C485 /* HistoryView.swift in Sources */,
 				C0D4D0052A1C2D4D00D9C485 /* IssuesView.swift in Sources */,
 				C0D4D0062A1C2D4D00D9C485 /* LocalizationManager.swift in Sources */,
@@ -221,8 +235,10 @@
 				C0D4D00A2A1C2D4D00D9C485 /* MapView.swift in Sources */,
 				C0D4D00B2A1C2D4D00D9C485 /* MessagesView.swift in Sources */,
 				C0D4D00C2A1C2D4D00D9C485 /* MockServices.swift in Sources */,
+				C0D4D00D2A1C2D4D00D9C485 /* Models.swift in Sources */,
 				C0D4D00E2A1C2D4D00D9C485 /* NotificationManager.swift in Sources */,
 				C0D4D00F2A1C2D4D00D9C485 /* PaymentGatewayService.swift in Sources */,
+				C0D4D0102A1C2D4D00D9C485 /* PaymentService.swift in Sources */,
 				C0D4D0112A1C2D4D00D9C485 /* PaymentsView.swift in Sources */,
 				C0D4D0122A1C2D4D00D9C485 /* PersistenceManager.swift in Sources */,
 				C0D4D0132A1C2D4D00D9C485 /* UserAuthentication.swift in Sources */,
