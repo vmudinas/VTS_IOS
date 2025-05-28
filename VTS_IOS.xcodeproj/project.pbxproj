@@ -19,7 +19,6 @@
 		C0D4D0042A1C2D4D00D9C485 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1042A1C2D4D00D9C485 /* HistoryView.swift */; };
 		C0D4D0052A1C2D4D00D9C485 /* IssuesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1052A1C2D4D00D9C485 /* IssuesView.swift */; };
 		C0D4D0062A1C2D4D00D9C485 /* LocalizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1062A1C2D4D00D9C485 /* LocalizationManager.swift */; };
-		C0D4D0072A1C2D4D00D9C485 /* LocalizationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1072A1C2D4D00D9C485 /* LocalizationManagerTests.swift */; };
 		C0D4D0082A1C2D4D00D9C485 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1082A1C2D4D00D9C485 /* LoginView.swift */; };
 		C0D4D0092A1C2D4D00D9C485 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D1092A1C2D4D00D9C485 /* MainView.swift */; };
 		C0D4D00A2A1C2D4D00D9C485 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D10A2A1C2D4D00D9C485 /* MapView.swift */; };
@@ -58,7 +57,7 @@
 		C0D4D1042A1C2D4D00D9C485 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		C0D4D1052A1C2D4D00D9C485 /* IssuesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IssuesView.swift; sourceTree = "<group>"; };
 		C0D4D1062A1C2D4D00D9C485 /* LocalizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationManager.swift; sourceTree = "<group>"; };
-		C0D4D1072A1C2D4D00D9C485 /* LocalizationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationManagerTests.swift; sourceTree = "<group>"; };
+		C0D4D1072A1C2D4D00D9C485 /* LocalizationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LocalizationManagerTests.swift; path = ../VTS_IOSTests/LocalizationManagerTests.swift; sourceTree = "<group>"; };
 		C0D4D1082A1C2D4D00D9C485 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		C0D4D1092A1C2D4D00D9C485 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		C0D4D10A2A1C2D4D00D9C485 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
@@ -125,7 +124,6 @@
 				C0D4D10A2A1C2D4D00D9C485 /* MapView.swift */,
 				C0D4D1132A1C2D4D00D9C485 /* UserAuthentication.swift */,
 				C0D4D1062A1C2D4D00D9C485 /* LocalizationManager.swift */,
-				C0D4D1072A1C2D4D00D9C485 /* LocalizationManagerTests.swift */,
 				C0D4D1082A1C2D4D00D9C485 /* LoginView.swift */,
 				C0D4D1092A1C2D4D00D9C485 /* MainView.swift */,
 				C0D4D10C2A1C2D4D00D9C485 /* MockServices.swift */,
