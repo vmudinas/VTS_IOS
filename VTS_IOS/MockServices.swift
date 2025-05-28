@@ -37,7 +37,7 @@ class PaymentService: ObservableObject {
                 isRecurring: true,
                 paymentFrequency: .monthly,
                 nextDueDate: calendar.date(byAdding: .month, value: 1, to: Date()) ?? Date(),
-                category: .fee
+                category: .services
             ),
             Payment(
                 amount: 85.50,
@@ -45,7 +45,7 @@ class PaymentService: ObservableObject {
                 description: "Equipment rental",
                 assignedTo: "user123",
                 isPaid: false,
-                category: .expense
+                category: .other
             ),
             Payment(
                 amount: 250.00,
@@ -66,7 +66,7 @@ class PaymentService: ObservableObject {
                 assignedTo: "user123",
                 isPaid: true,
                 paymentMethod: .stripe,
-                category: .fee
+                category: .services
             ),
             Payment(
                 amount: 45.75,
@@ -80,7 +80,7 @@ class PaymentService: ObservableObject {
                 refundIssuedBy: "landlord123",
                 refundReason: "Equipment returned early",
                 refundDate: calendar.date(byAdding: .day, value: -18, to: Date()) ?? Date(),
-                category: .expense
+                category: .other
             ),
             // Add more sample payments for financial reporting
             Payment(
