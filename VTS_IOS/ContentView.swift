@@ -1,4 +1,24 @@
 import SwiftUI
+import Foundation
+import Combine
+
+// Import all required components
+import MapKit
+import CoreLocation
+
+// Import managers
+import UserAuthentication
+import LocalizationManager
+
+// Import views
+import PaymentsView
+import FinancialReportView
+import IssuesView
+import DocumentsView
+import MessagesView
+import VideoUploadView
+import HistoryView
+import MapView
 
 struct ContentView: View {
     @StateObject var authentication = UserAuthentication()
