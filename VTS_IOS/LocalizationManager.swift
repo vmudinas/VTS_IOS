@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-class LocalizationManager: ObservableObject {
+public class LocalizationManager: ObservableObject {
     static let shared = LocalizationManager()
     
     @Published var currentLocale: Locale

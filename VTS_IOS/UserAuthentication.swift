@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 import Combine
 
-class UserAuthentication: ObservableObject {
+public class UserAuthentication: ObservableObject {
     @Published var isAuthenticated: Bool = false
     @Published var currentUsername: String = ""
     

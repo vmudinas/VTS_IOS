@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PaymentsView: View {
+public struct PaymentsView: View {
     @ObservedObject var paymentService = PaymentService()
     @State private var isShowingPaymentSheet = false
     @State private var isShowingHistorySheet = false

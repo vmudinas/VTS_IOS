@@ -222,7 +222,7 @@ struct LanguageSelectionView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(localization.supportedLanguages.keys.sorted(), id: \.self) { key in
+                ForEach<[String], String, Button<HStack<TupleView<(Text, Spacer, Optional<Image>)>>>>(localization.supportedLanguages.keys.sorted(), id: \.self) { key in
                     Button(action: {
                         selectedLanguage = key
                         localization.changeLanguage(languageCode: key)

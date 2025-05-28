@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct HistoryView: View {
+public struct HistoryView: View {
     @ObservedObject var historyService = HistoryService()
     
     var body: some View {

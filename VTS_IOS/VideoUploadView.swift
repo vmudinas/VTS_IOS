@@ -1,7 +1,7 @@
 import SwiftUI
 import AVKit
 
-struct VideoUploadView: View {
+public struct VideoUploadView: View {
     @ObservedObject var videoService = VideoService()
     @State private var showingVideoPickerSheet = false
     @State private var showingVideoUploadForm = false

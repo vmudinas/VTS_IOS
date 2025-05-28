@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct MessagesView: View {
+public struct MessagesView: View {
     @StateObject private var messageService = MessageService()
     @State private var selectedConversation: String? = nil
     @State private var composedMessage: String = ""
