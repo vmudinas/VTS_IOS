@@ -65,13 +65,7 @@ enum PaymentMethod: String, Codable, CaseIterable {
     case other = "Other"
 }
 
-enum PaymentFrequency: String, Codable, CaseIterable {
-    case oneTime = "One-time"
-    case weekly = "Weekly"
-    case monthly = "Monthly"
-    case quarterly = "Quarterly"
-    case annually = "Annually"
-}
+
 
 enum PaymentCategory: String, Codable, CaseIterable {
     case rent = "Rent"

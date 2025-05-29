@@ -151,7 +151,6 @@ struct PaymentHistoryRowView: View {
                         .font(.caption)
                         .foregroundColor(.red)
                 }
-                }
             }
             .padding(.top, 2)
             
