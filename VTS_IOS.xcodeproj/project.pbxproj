@@ -36,6 +36,7 @@
 		C0D4D01A2A1C2D4D00D9C485 /* Payment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D11A2A1C2D4D00D9C485 /* Payment.swift */; };
 		C0D4D01B2A1C2D4D00D9C485 /* Property.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D11B2A1C2D4D00D9C485 /* Property.swift */; };
 		C0D4D01C2A1C2D4D00D9C485 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D11C2A1C2D4D00D9C485 /* Video.swift */; };
+		C0D4D01D2A1C2D4D00D9C485 /* PaymentFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4D11D2A1C2D4D00D9C485 /* PaymentFrequency.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -71,6 +72,7 @@
 		C0D4D11A2A1C2D4D00D9C485 /* Payment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Payment.swift; path = Models/Payment.swift; sourceTree = "<group>"; };
 		C0D4D11B2A1C2D4D00D9C485 /* Property.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Property.swift; path = Models/Property.swift; sourceTree = "<group>"; };
 		C0D4D11C2A1C2D4D00D9C485 /* Video.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Video.swift; path = Models/Video.swift; sourceTree = "<group>"; };
+		C0D4D11D2A1C2D4D00D9C485 /* PaymentFrequency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PaymentFrequency.swift; path = Models/PaymentFrequency.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +130,7 @@
 				C0D4D1182A1C2D4D00D9C485 /* Issue.swift */,
 				C0D4D1192A1C2D4D00D9C485 /* Message.swift */,
 				C0D4D11A2A1C2D4D00D9C485 /* Payment.swift */,
+				C0D4D11D2A1C2D4D00D9C485 /* PaymentFrequency.swift */,
 				C0D4D11B2A1C2D4D00D9C485 /* Property.swift */,
 				C0D4D11C2A1C2D4D00D9C485 /* Video.swift */,
 				13F8B8A72A1B2D4E00D9C485 /* Assets.xcassets */,
@@ -233,6 +236,7 @@
 				C0D4D0182A1C2D4D00D9C485 /* Issue.swift in Sources */,
 				C0D4D0192A1C2D4D00D9C485 /* Message.swift in Sources */,
 				C0D4D01A2A1C2D4D00D9C485 /* Payment.swift in Sources */,
+				C0D4D01D2A1C2D4D00D9C485 /* PaymentFrequency.swift in Sources */,
 				C0D4D01B2A1C2D4D00D9C485 /* Property.swift in Sources */,
 				C0D4D01C2A1C2D4D00D9C485 /* Video.swift in Sources */,
 			);
