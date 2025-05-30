@@ -33,16 +33,18 @@ public struct DocumentsView: View {
                     }
                 }
             }
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(.insetGrouped)
             .navigationTitle(localization.localized("documents"))
-            .navigationBarItems(
-                trailing: Button(action: {
-                    showingDocumentUploadForm = true
-                }) {
-                    Image(systemName: "plus")
-                        .accessibilityLabel("Upload document")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingDocumentUploadForm = true
+                    }) {
+                        Image(systemName: "plus")
+                            .accessibilityLabel("Upload document")
+                    }
                 }
-            )
+            }
             .sheet(isPresented: $showingDocumentUploadForm) {
                 DocumentUploadView(isPresented: $showingDocumentUploadForm)
             }
@@ -362,17 +364,21 @@ struct DocumentUploadView: View {
                 }
             }
             .navigationTitle(localization.localized("upload_document"))
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    isPresented = false
-                },
-                trailing: Button("Upload") {
-                    if !title.isEmpty {
-                        showingConfirmation = true
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        isPresented = false
                     }
                 }
-                .disabled(title.isEmpty)
-            )
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Upload") {
+                        if !title.isEmpty {
+                            showingConfirmation = true
+                        }
+                    }
+                    .disabled(title.isEmpty)
+                }
+            }
             .alert("Upload Document", isPresented: $showingConfirmation) {
                 Button("Cancel", role: .cancel) {}
                 Button("Upload") {

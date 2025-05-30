@@ -152,23 +152,27 @@ struct AddPropertyView: View {
                 }
             }
             .navigationTitle("Add Property")
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    isPresented = false
-                },
-                trailing: Button("Save") {
-                    propertyService.addProperty(
-                        name: name,
-                        address: address,
-                        description: description,
-                        latitude: latitude,
-                        longitude: longitude,
-                        createdBy: "admin"
-                    )
-                    isPresented = false
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        isPresented = false
+                    }
                 }
-                .disabled(name.isEmpty || address.isEmpty)
-            )
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        propertyService.addProperty(
+                            name: name,
+                            address: address,
+                            description: description,
+                            latitude: latitude,
+                            longitude: longitude,
+                            createdBy: "admin"
+                        )
+                        isPresented = false
+                    }
+                    .disabled(name.isEmpty || address.isEmpty)
+                }
+            }
         }
     }
 }
@@ -292,9 +296,13 @@ struct InviteTenantView: View {
                 }
             }
             .navigationBarTitle("Invite Tenant", displayMode: .inline)
-            .navigationBarItems(leading: Button("Cancel") {
-                isPresented = false
-            })
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        isPresented = false
+                    }
+                }
+            }
         }
     }
 }

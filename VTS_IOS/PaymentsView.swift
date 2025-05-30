@@ -14,7 +14,7 @@ public struct PaymentsView: View {
                     Text(localization.localized("upcoming")).tag(false)
                     Text(localization.localized("history")).tag(true)
                 }
-                .pickerStyle(SegmentedPickerStyle())
+                .pickerStyle(.segmented)
                 .padding(.horizontal)
                 
                 if !isShowingHistorySheet {
@@ -28,14 +28,14 @@ public struct PaymentsView: View {
                                 }
                         }
                     }
-                    .listStyle(InsetGroupedListStyle())
+                    .listStyle(.insetGrouped)
                 } else {
                     List {
                         ForEach(paymentService.paymentHistory) { payment in
                             PaymentHistoryRowView(payment: payment)
                         }
                     }
-                    .listStyle(InsetGroupedListStyle())
+                    .listStyle(.insetGrouped)
                 }
             }
             .navigationBarTitle(localization.localized("payments"), displayMode: .inline)
@@ -242,7 +242,7 @@ struct PaymentDetailView: View {
                                 Text(method.rawValue).tag(method)
                             }
                         }
-                        .pickerStyle(SegmentedPickerStyle())
+                        .pickerStyle(.segmented)
                         
                         Toggle("Set as recurring payment", isOn: $showRecurringOptions.animation())
                         
@@ -324,9 +324,13 @@ struct PaymentDetailView: View {
                 }
             }
             .navigationBarTitle("Payment Details", displayMode: .inline)
-            .navigationBarItems(trailing: Button("Close") {
-                isPresented = false
-            })
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Close") {
+                        isPresented = false
+                    }
+                }
+            }
             .alert(isPresented: $paymentComplete) {
                 Alert(
                     title: Text("Payment Complete"),
@@ -425,9 +429,13 @@ struct RefundView: View {
                 .disabled(isProcessing || refundReason.isEmpty)
             }
             .navigationBarTitle("Issue Refund", displayMode: .inline)
-            .navigationBarItems(trailing: Button("Cancel") {
-                isPresented = false
-            })
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        isPresented = false
+                    }
+                }
+            }
             .alert(isPresented: $refundComplete) {
                 Alert(
                     title: Text("Refund Processed"),

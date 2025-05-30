@@ -19,7 +19,7 @@ public struct IssuesView: View {
                     }
                 }
             }
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(.insetGrouped)
             .navigationTitle(localization.localized("maintenance"))
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -318,7 +318,7 @@ struct CreateIssueView: View {
                             Text(priority.rawValue).tag(priority)
                         }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
+                    .pickerStyle(.segmented)
                     
                     HStack {
                         Image(systemName: "clock.fill")
@@ -1017,7 +1017,7 @@ struct ContractorSelectionView: View {
                                 Text(specialty.rawValue).tag(Optional(specialty))
                             }
                         }
-                        .pickerStyle(MenuPickerStyle())
+                        .pickerStyle(.menu)
                     }
                     .padding(.horizontal)
                 }
@@ -1034,7 +1034,7 @@ struct ContractorSelectionView: View {
                         }
                     }
                 }
-                .listStyle(InsetGroupedListStyle())
+                .listStyle(.insetGrouped)
             }
             .navigationTitle("Select Contractor")
             .navigationBarTitleDisplayMode(.inline)
