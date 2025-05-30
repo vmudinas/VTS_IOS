@@ -235,7 +235,7 @@ struct LanguageSelectionView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach<[String], String, Button<HStack<TupleView<(Text, Spacer, Optional<Image>)>>>>(localization.supportedLanguages.keys.sorted(), id: \.self) { key in
+                ForEach(localization.supportedLanguages.keys.sorted(), id: \.self) { key in
                     Button(action: {
                         selectedLanguage = key
                         localization.changeLanguage(languageCode: key)
@@ -255,9 +255,13 @@ struct LanguageSelectionView: View {
                 }
             }
             .navigationBarTitle(localization.localized("select_language"), displayMode: .inline)
-            .navigationBarItems(trailing: Button(localization.localized("done")) {
-                isPresented = false
-            })
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(localization.localized("done")) {
+                        isPresented = false
+                    }
+                }
+            }
         }
     }
 }

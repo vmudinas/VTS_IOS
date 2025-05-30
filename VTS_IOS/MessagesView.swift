@@ -393,9 +393,13 @@ struct PersonPickerView: View {
             }
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("New Message")
-            .navigationBarItems(trailing: Button("Cancel") {
-                isPresented = false
-            })
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        isPresented = false
+                    }
+                }
+            }
         }
     }
 }

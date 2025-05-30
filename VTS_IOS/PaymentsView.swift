@@ -324,9 +324,13 @@ struct PaymentDetailView: View {
                 }
             }
             .navigationBarTitle("Payment Details", displayMode: .inline)
-            .navigationBarItems(trailing: Button("Close") {
-                isPresented = false
-            })
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Close") {
+                        isPresented = false
+                    }
+                }
+            }
             .alert(isPresented: $paymentComplete) {
                 Alert(
                     title: Text("Payment Complete"),
@@ -425,9 +429,13 @@ struct RefundView: View {
                 .disabled(isProcessing || refundReason.isEmpty)
             }
             .navigationBarTitle("Issue Refund", displayMode: .inline)
-            .navigationBarItems(trailing: Button("Cancel") {
-                isPresented = false
-            })
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        isPresented = false
+                    }
+                }
+            }
             .alert(isPresented: $refundComplete) {
                 Alert(
                     title: Text("Refund Processed"),

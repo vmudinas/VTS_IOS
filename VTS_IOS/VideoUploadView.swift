@@ -183,29 +183,33 @@ struct VideoUploadFormView: View {
                 }
             }
             .navigationBarTitle(localization.localized("upload_video"), displayMode: .inline)
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    isPresented = false
-                },
-                trailing: Button("Upload") {
-                    if !title.isEmpty {
-                        // Create a mock URL for demonstration
-                        let mockURL = URL(string: "https://example.com/video.mp4")
-                        
-                        // Call the upload function
-                        videoService.uploadVideo(
-                            title: title,
-                            description: description,
-                            videoURL: mockURL!
-                        ) { success in
-                            if success {
-                                isPresented = false
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        isPresented = false
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Upload") {
+                        if !title.isEmpty {
+                            // Create a mock URL for demonstration
+                            let mockURL = URL(string: "https://example.com/video.mp4")
+                            
+                            // Call the upload function
+                            videoService.uploadVideo(
+                                title: title,
+                                description: description,
+                                videoURL: mockURL!
+                            ) { success in
+                                if success {
+                                    isPresented = false
+                                }
                             }
                         }
                     }
+                    .disabled(title.isEmpty)
                 }
-                .disabled(title.isEmpty)
-            )
+            }
         }
     }
 }
