@@ -4,7 +4,7 @@ import SwiftUI
 import UserNotifications
 
 // Service to handle payment gateway functionality
-class PaymentGatewayService: ObservableObject {
+public class PaymentGatewayService: ObservableObject {
     @Published var isProcessingPayment: Bool = false
     @Published var isRefunding: Bool = false
     @Published var paymentSuccessful: Bool = false

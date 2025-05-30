@@ -150,6 +150,7 @@ struct VideoUploadFormView: View {
     
     @State private var title: String = ""
     @State private var description: String = ""
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         NavigationView {

@@ -60,6 +60,7 @@ enum PaymentMethod: String, Codable, CaseIterable {
     case bankTransfer = "Bank Transfer"
     case paypal = "PayPal"
     case stripe = "Stripe"
+    case applePay = "Apple Pay"
     case cash = "Cash"
     case check = "Check"
     case other = "Other"
