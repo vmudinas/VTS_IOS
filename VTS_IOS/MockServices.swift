@@ -3,7 +3,7 @@ import Combine
 import SwiftUI
 
 // Mock service for handling payment data
-class PaymentService: ObservableObject {
+public class PaymentService: ObservableObject {
     @Published var upcomingPayments: [Payment] = []
     @Published var paymentHistory: [Payment] = []
     @Published var isOfflineMode: Bool = false
@@ -317,7 +317,7 @@ class PaymentService: ObservableObject {
 }
 
 // Mock service for handling issues and maintenance requests
-class IssueService: ObservableObject {
+public class IssueService: ObservableObject {
     @Published var issues: [Issue] = []
     private let historyService: HistoryService
     
@@ -802,7 +802,7 @@ class ContractorService: ObservableObject {
 }
 
 // Mock service for handling video uploads
-class VideoService: ObservableObject {
+public class VideoService: ObservableObject {
     @Published var videos: [Video] = []
     @Published var uploadProgress: Float = 0
     @Published var isUploading: Bool = false
@@ -878,7 +878,7 @@ class VideoService: ObservableObject {
 }
 
 // Mock service for handling document management
-class DocumentService: ObservableObject {
+public class DocumentService: ObservableObject {
     @Published var documents: [Document] = []
     @Published var uploadProgress: Float = 0
     @Published var isUploading: Bool = false
@@ -1259,7 +1259,7 @@ class MessageService: ObservableObject {
 }
 
 // Mock service for handling properties
-class PropertyService: ObservableObject {
+public class PropertyService: ObservableObject {
     @Published var properties: [Property] = []
     private let historyService = HistoryService()
     
