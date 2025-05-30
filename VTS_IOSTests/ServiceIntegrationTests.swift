@@ -9,9 +9,9 @@ class ServiceIntegrationTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        issueService = IssueService()
-        contractorService = ContractorService()
         historyService = HistoryService()
+        issueService = IssueService(historyService: historyService)
+        contractorService = ContractorService(historyService: historyService)
         
         // Start with a clean slate for each test
         issueService.issues = []

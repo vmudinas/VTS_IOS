@@ -319,9 +319,10 @@ class PaymentService: ObservableObject {
 // Mock service for handling issues and maintenance requests
 class IssueService: ObservableObject {
     @Published var issues: [Issue] = []
-    private let historyService = HistoryService()
+    private let historyService: HistoryService
     
-    init() {
+    init(historyService: HistoryService? = nil) {
+        self.historyService = historyService ?? HistoryService()
         // Load sample data
         loadSampleIssues()
     }
@@ -700,9 +701,10 @@ class ContractorService: ObservableObject {
     @Published var contractors: [Contractor] = []
     @Published var availableContractors: [Contractor] = []
     @Published var bookedContractors: [UUID: [DateInterval]] = [:]
-    let historyService = HistoryService()
+    let historyService: HistoryService
     
-    init() {
+    init(historyService: HistoryService? = nil) {
+        self.historyService = historyService ?? HistoryService()
         // Load sample data
         loadSampleContractors()
     }
