@@ -306,6 +306,7 @@ struct DocumentUploadView: View {
     @State private var signatureRequired = false
     @State private var showingConfirmation = false
     @FocusState private var focusedField: Field?
+    @ObservedObject private var localization = LocalizationManager.shared
     
     enum Field {
         case title, description
