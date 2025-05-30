@@ -28,7 +28,7 @@ public struct FinancialReportView: View {
                         Text(timeFrame.rawValue).tag(timeFrame)
                     }
                 }
-                .pickerStyle(SegmentedPickerStyle())
+                .pickerStyle(.segmented)
                 .padding(.horizontal)
                 .onChange(of: selectedTimeFrame) { newValue in
                     updateDateRange()
@@ -37,11 +37,11 @@ public struct FinancialReportView: View {
                 if showCustomDatePicker {
                     VStack {
                         DatePicker("Start Date", selection: $startDate, displayedComponents: .date)
-                            .datePickerStyle(CompactDatePickerStyle())
+                            .datePickerStyle(.compact)
                             .padding(.horizontal)
                         
                         DatePicker("End Date", selection: $endDate, displayedComponents: .date)
-                            .datePickerStyle(CompactDatePickerStyle())
+                            .datePickerStyle(.compact)
                             .padding(.horizontal)
                     }
                     .padding(.vertical, 8)

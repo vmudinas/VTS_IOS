@@ -14,7 +14,7 @@ public struct PaymentsView: View {
                     Text(localization.localized("upcoming")).tag(false)
                     Text(localization.localized("history")).tag(true)
                 }
-                .pickerStyle(SegmentedPickerStyle())
+                .pickerStyle(.segmented)
                 .padding(.horizontal)
                 
                 if !isShowingHistorySheet {
@@ -28,14 +28,14 @@ public struct PaymentsView: View {
                                 }
                         }
                     }
-                    .listStyle(InsetGroupedListStyle())
+                    .listStyle(.insetGrouped)
                 } else {
                     List {
                         ForEach(paymentService.paymentHistory) { payment in
                             PaymentHistoryRowView(payment: payment)
                         }
                     }
-                    .listStyle(InsetGroupedListStyle())
+                    .listStyle(.insetGrouped)
                 }
             }
             .navigationBarTitle(localization.localized("payments"), displayMode: .inline)
@@ -242,7 +242,7 @@ struct PaymentDetailView: View {
                                 Text(method.rawValue).tag(method)
                             }
                         }
-                        .pickerStyle(SegmentedPickerStyle())
+                        .pickerStyle(.segmented)
                         
                         Toggle("Set as recurring payment", isOn: $showRecurringOptions.animation())
                         

@@ -71,7 +71,7 @@ public struct MessagesView: View {
                                 }
                             }
                         }
-                        .listStyle(PlainListStyle())
+                        .listStyle(.plain)
                         
                         Button(action: {
                             isShowingPersonPicker = true
@@ -391,7 +391,7 @@ struct PersonPickerView: View {
                     }
                 }
             }
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(.insetGrouped)
             .navigationTitle("New Message")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

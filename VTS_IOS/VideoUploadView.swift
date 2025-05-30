@@ -43,7 +43,7 @@ public struct VideoUploadView: View {
                         }
                     }
                 }
-                .listStyle(InsetGroupedListStyle())
+                .listStyle(.insetGrouped)
             }
             .navigationBarTitle(localization.localized("video_upload"), displayMode: .inline)
             .actionSheet(isPresented: $showingVideoPickerSheet) {

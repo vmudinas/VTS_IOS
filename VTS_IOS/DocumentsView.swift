@@ -33,7 +33,7 @@ public struct DocumentsView: View {
                     }
                 }
             }
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(.insetGrouped)
             .navigationTitle(localization.localized("documents"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
