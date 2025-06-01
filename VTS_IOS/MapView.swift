@@ -40,13 +40,11 @@ public struct MapView: View {
                         }
                     }
                 }
-                .onLongPressGesture(minimumDuration: 1) { location in
+                .onLongPressGesture(minimumDuration: 1) {
                     if authentication.currentUsername == "admin" {
-                        // Convert tap point to map coordinate
-                        let tapPoint = location
-                        guard let mapCoordinate = convertToCoordinate(tapPoint) else { return }
-                        
-                        longPressLocation = mapCoordinate
+                        // For a real implementation, we would detect the tap location
+                        // For now, just use the center of the map region
+                        longPressLocation = region.center
                         showingAddProperty = true
                     }
                 }
